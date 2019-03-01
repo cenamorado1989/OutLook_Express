@@ -54,3 +54,18 @@ router.get('/', async function (req, res, next) {
 });
 
 module.exports = router;
+
+
+
+
+// .api("/me/messages?$filter=from/emailaddress/address eq 'hpham.us@gmail.com' ")
+// this is to search for a specific person in all of your messages . works fine
+
+//.api("/me/mailfolders/inbox/messages?$filter=from/emailaddress/address eq 'hpham.us@gmail.com'")
+// this will check in your inbox for a specific person email address
+
+//.api("/me/messages?$filter=from/emailaddress/address eq '@npm.js.com'")
+// this one doesn't work when searching
+
+// .api('/me/mailfolders/inbox/messages?$search= "from:@student.gsu.edu" ')
+// here we are now searching all students with @student.gsu.edu
