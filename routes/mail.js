@@ -1,4 +1,3 @@
-// Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE.txt in the project root for license information.
 var express = require('express');
 var router = express.Router();
 var authHelper = require('../helpers/auth');
@@ -29,7 +28,9 @@ router.get('/', async function (req, res, next) {
     try {
       // Get the 10 newest messages from inbox
       const result = await client
-        .api('/me/mailfolders/inbox/messages')
+        .api('/me/mailfolders/inbox/messages?$search= "from:@student.gsu.edu"')
+        //api("/me/mailfolders/inbox/messages?$filter=from/emailaddress/address eq '@student.gsu.edu'")
+        //api("/me/messages?$filter=from/emailaddress/address eq '@npm.js.com'")
         .top(10)
         .select('subject,from,receivedDateTime,isRead,sentDateTime')
         // .orderby('receivedDateTime DESC')
@@ -54,8 +55,6 @@ router.get('/', async function (req, res, next) {
 });
 
 module.exports = router;
-
-
 
 
 // .api("/me/messages?$filter=from/emailaddress/address eq 'hpham.us@gmail.com' ")
