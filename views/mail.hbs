@@ -1,4 +1,4 @@
-<h2>Inbox</h2>
+<h2> Report</h2>
 <table class="table">
   <thead class="thead-light">
     <th scope="col">From</th>
@@ -6,8 +6,7 @@
     <th scope="col">Received</th>
     <th scope="col">isRead</th>
     <th scope="col">Sent Time</th>
-
-
+    <th scope="col">Count</th>
 
 
   </thead>
@@ -19,6 +18,8 @@
       <td>{{this.receivedDateTime}}</td>
       <td>{{this.isRead}}</td>
       <td>{{this.sentDateTime}}</td>
+
+      {{messages.array.length}}
 
 
 
