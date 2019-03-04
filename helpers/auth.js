@@ -1,7 +1,7 @@
 const credentials = {
   client: {
-    id: 'e0d134c1-a6bd-48b4-9ab7-16f0894ddbcb',
-    secret: 'psgAZO3=!)kgybFRWA1253)',
+    id: process.env.APP_ID,
+    secret: process.env.APP_PASSWORD,
   },
   auth: {
     tokenHost: 'https://login.microsoftonline.com',
