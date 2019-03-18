@@ -5,6 +5,7 @@ var authHelper = require('../helpers/auth');
 /* GET home page. */
 router.get('/', async function (req, res, next) {
   let parms = {
+    // document this 
     title: 'Home',
     active: {
       home: true

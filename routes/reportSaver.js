@@ -7,24 +7,27 @@ var db = require('../helpers/database')
 // Creating report object from report.js
 SERA = require('../helpers/report_Schema')
 
-var app = express()
+
 // Posting Email
 router.post('/save', async function (req, res) {
+    let parms = {
+        title: 'Inbox',
+        active: {
+            inbox: true
+        }
+    };
 
-    // let parms = {
-    //     title: 'Inbox',
-    //     active: {
-    //         inbox: true
-    //     }
-    // };
-
-    debugger;
 
     // get token and username from input of email
     // must be able to get the accessToken and username because I am not 
     // seeing the value array I get back from the api
-    const accessToken = await authHelper.getAccessToken(req.cookies, res);
-    const userName = req.cookies.graph_user_name;
+    // change back to teh way it was before. Username will be in req.cookies
+    const {
+        token: accessToken,
+        userName
+    } = await authHelper.getAccessToken(req.cookies, res);
+    //const userName = req.cookies.graph_user_name;
+    console.log(userName);
 
     if (true) {
         parms.user = userName;
@@ -48,16 +51,16 @@ router.post('/save', async function (req, res) {
                 .count(true)
                 .get();
 
+                // array  - loop throught array
 
             const report = new SERA({
-                _id: req.body._id,
-                //result.value[0].id,
-                receivedDateTime: //req.body.receivedDateTime,
-                    result.value[0].receivedDateTime,
-                sentDateTime: // req.body.sentDateTime
-                    result.value[1].sentDateTime
+                receivedDateTime: result.value[0].receivedDateTime,
+                
+                sentDateTime: result.value[1].sentDateTime
+                //
             });
-
+            //to push everything
+           // report.insertMany(result.value)
             // save stores into database
             report.save().then(result => {
                     console.log(result)
@@ -75,17 +78,16 @@ router.post('/save', async function (req, res) {
         } catch (err) {
             parms.message = 'Error retrieving messages';
             parms.error = {
-                status: `${err.code}: ${err.message}`
+                status: `${err.code}: ${err.message}`,
             };
+            console.log("Error getting messages")
             parms.debug = JSON.stringify(err.body, null, 2);
             res.render('error', parms);
         }
 
         // If we dont have the accessToken and userName
     } else {
-        res.send.json({
-            message: "There was an error",
-        });
+        console.log("You got an error")
     }
 
     //     console.log("I have been hit")

@@ -11,7 +11,9 @@
 
   </thead>
   <tbody>
-    {{#each messages}}
+    {{!-- here we are looping through the results array from the api --}}
+    {{#each mohamed}}
+    {{!-- If there are no read messages --}}
     <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
       <td title="{{this.from.emailAddress.address}}">{{this.from.emailAddress.name}}</td>
       <td>{{this.subject}}</td>
@@ -19,7 +21,6 @@
       <td>{{this.isRead}}</td>
       <td>{{this.sentDateTime}}</td>
 
-      {{messages.array.length}}
 
 
 

@@ -1,39 +1,66 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// here we are using the .env file to configure our enviroment
 require('dotenv').config();
+
+
 
 var index = require('./routes/index');
 var authorize = require('./routes/authorize');
 var mail = require('./routes/mail');
-//var calendar = require('./routes/calendar');
-//var contacts = require('./routes/contacts');
+var database = require('./helpers/database')
+var reportSaver = require('./routes/reportSaver')
+
+// Creating report object from database.js
+testReport = require('./helpers/report_Schema')
 
 var app = express();
 
+
 // view engine setup
+// we also set the path to where to find the views folder
 app.set('views', path.join(__dirname, 'views'));
+// here we are setting the type of view engine we are using which is hbs
 app.set('view engine', 'hbs');
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// default logger to display erros
 app.use(logger('dev'));
+// Returns middleware that only parses json and only looks at requests where the 
+// Parses JSON between fron and back 
 app.use(bodyParser.json());
+
+//parsing the URL-encoded data with the querystring library (when false) 
 app.use(bodyParser.urlencoded({
   extended: false
 }));
+
+// middleware to allow access to cookies
 app.use(cookieParser());
+
+// use any static files in the public direcotry
 app.use(express.static(path.join(__dirname, 'public')));
 
+// set the root route to show the index.js
 app.use('/', index);
+
+// set authorize route
 app.use('/authorize', authorize);
+
+// set mail route
 app.use('/mail', mail);
-//app.use('/calendar', calendar);
-//app.use('/contacts', contacts);
+
+app.use('/mail/saveReport', mail)
+
+app.use('/reportSaver', reportSaver)
+
+app.use('/database', database);
+
+
+
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
