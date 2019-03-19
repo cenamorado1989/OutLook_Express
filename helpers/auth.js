@@ -26,6 +26,7 @@ function getAuthUrl() {
   const returnVal = oauth2.authorizationCode.authorizeURL({
     // this is where we are redirected after authorization
     redirect_uri: process.env.REDIRECT_URI,
+
     // this is the scopes of the app
     scope: process.env.APP_SCOPES
   });
@@ -45,9 +46,10 @@ async function getTokenFromCode(auth_code, res) {
   // creates the access token
   const token = oauth2.accessToken.create(result);
   console.log('Token created: ', token.token);
-
+  // here we save the token to the cookies
   saveValuesToCookie(token, res);
 
+  // return access token
   return token.token.access_token;
 }
 
@@ -55,6 +57,7 @@ async function getAccessToken(cookies, res) {
   // Do we have an access token cached?
   let token = cookies.graph_access_token;
 
+  // if we have it
   if (token) {
     // We have a token, but is it expired?
     // Expire 5 minutes early to account for clock differences
@@ -62,12 +65,17 @@ async function getAccessToken(cookies, res) {
     const expiration = new Date(parseFloat(cookies.graph_token_expires - FIVE_MINUTES));
     if (expiration > new Date()) {
       // Token is still good, just return it
+      return token;
       return {
+        // I comment this uncomment if you need to
+        //token;
         token,
         userName: cookies.graph_user_name
-      };
+      }
     }
   }
+
+
 
   // Either no token or it's expired, do we have a 
   // refresh token?
@@ -78,11 +86,18 @@ async function getAccessToken(cookies, res) {
     const newToken = await oauth2.accessToken.create({
       refresh_token: refresh_token
     }).refresh();
+
+    // added this back
+    // I commented this to test the username. Uncomment back if you need to
+    // return newToken.token.access_token;
+
+    // I uncommented this. Comment to change back
     const user = saveValuesToCookie(newToken, res);
     // you might want to also return the username with the token
     // the reason is because we get the token before the username
     // we get token but username is saved to cookies
     // so we gotta make another request.
+    return token;
     return {
       // postman testing
       token: newToken.token.access_token,

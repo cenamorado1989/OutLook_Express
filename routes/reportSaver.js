@@ -7,29 +7,43 @@ var db = require('../helpers/database')
 // Creating report object from report.js
 SERA = require('../helpers/report_Schema')
 
+router.get('/', async (req, res) => {
+    // get from mongo
+    // render
+    // req.query.dateFrom req.query.dateEnd
+    res.send('Render repots here..');
+})
 
 // Posting Email
+// post form with a link
+// or ajax to redirect after
 router.post('/save', async function (req, res) {
     let parms = {
-        title: 'Inbox',
+        title: 'Reports Page',
         active: {
-            inbox: true
+            reports: true
         }
     };
-
+    console.log('In save');
 
     // get token and username from input of email
     // must be able to get the accessToken and username because I am not 
     // seeing the value array I get back from the api
     // change back to teh way it was before. Username will be in req.cookies
-    const {
-        token: accessToken,
-        userName
-    } = await authHelper.getAccessToken(req.cookies, res);
-    //const userName = req.cookies.graph_user_name;
-    console.log(userName);
+    // const {
+    //     token: accessToken,
+    //     userName
+    // } = await authHelper.getAccessToken(req.cookies.graph_user_name, res);
 
-    if (true) {
+    const accessToken = await authHelper.getAccessToken(req.cookies, res);
+    const userName = req.cookies.graph_user_name;
+    console.log(req.cookies) // get back access_token
+    console.log(userName) // getting back undefined
+    console.log(userName); // getting back undefined
+    console.log(accessToken) // getting null 
+
+    //console.log(userName)
+    if (accessToken && userName) {
         parms.user = userName;
 
         // Initialize Graph client
@@ -51,31 +65,48 @@ router.post('/save', async function (req, res) {
                 .count(true)
                 .get();
 
-                // array  - loop throught array
+            // array  - loop throught array
 
-            const report = new SERA({
-                receivedDateTime: result.value[0].receivedDateTime,
-                
-                sentDateTime: result.value[1].sentDateTime
-                //
-            });
+            // const report = new SERA({
+            //     receivedDateTime: result.value[0].receivedDateTime,
+
+            //     sentDateTime: result.value[1].sentDateTime
+            //     //
+            // });
             //to push everything
-           // report.insertMany(result.value)
-            // save stores into database
-            report.save().then(result => {
-                    console.log(result)
-                })
-                // error checking
-                // promise
-                .catch((err) => console.log(err))
+            const toSave = result.value.map(value => ({
+                isRead: value.isRead,
+                subject: value.subject,
+                from: value.from.emailAddress.emailAddress,
+                receivedDateTime: value.receivedDateTime,
+                sentDateTime: value.sentDateTime
+            }));
 
-            res.status(201).json({
+            SERA.insertMany(toSave, function (error, success) {
+                if (error) {
+                    console.log("There has been an error inserting", error)
+                    return res.render('error', {})
+                }
+                parms.reports = result.value;
+                console.log(result);
+                res.render('reports', parms);
+            });
+            // save stores into database
+            // SERA.save().then(result => {
+            //     console.log(result)
+            // }).catch(function (error) {
+            //     console.log("The error is " + error)
+            // });
+            /*res.status(201).json({
                 message: "Handling post request to /api/report",
                 createdReport: report
             });
+            */
+
 
 
         } catch (err) {
+            console.log(err);
             parms.message = 'Error retrieving messages';
             parms.error = {
                 status: `${err.code}: ${err.message}`,

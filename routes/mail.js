@@ -12,11 +12,13 @@ var app = express()
 /* GET /mail */
 router.get('/', async function (req, res, next) {
 
-  // 
+  // the parms object values are whats used in our handlebars display
+  // for each file
   let parms = {
     title: 'Inbox',
     active: {
-      inbox: true
+      // this will be why the tab is highlighted
+      report: true
     }
   };
   // get token and username from input of email
@@ -62,12 +64,13 @@ router.get('/', async function (req, res, next) {
 
 
     } catch (err) {
+      console.error(err);
       parms.message = 'Error retrieving messages';
       parms.error = {
         status: `${err.code}: ${err.message}`
       };
       parms.debug = JSON.stringify(err.body, null, 2);
-      res.render('The error is', parms);
+      res.render('error', parms);
     }
     // if we dont have the accessToken and username?
   } else {

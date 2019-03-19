@@ -12,11 +12,12 @@ require('dotenv').config();
 var index = require('./routes/index');
 var authorize = require('./routes/authorize');
 var mail = require('./routes/mail');
-var database = require('./helpers/database')
-var reportSaver = require('./routes/reportSaver')
+var database = require('./helpers/database');
+var reportSaver = require('./routes/reportSaver');
+// var reports = require('./views/reports');
 
 // Creating report object from database.js
-testReport = require('./helpers/report_Schema')
+testReport = require('./helpers/report_Schema');
 
 var app = express();
 
@@ -53,11 +54,13 @@ app.use('/authorize', authorize);
 // set mail route
 app.use('/mail', mail);
 
-app.use('/mail/saveReport', mail)
+// app.use('/mail/saveReport', mail)
 
 app.use('/reportSaver', reportSaver)
 
 app.use('/database', database);
+
+// app.use('/reports', reports)
 
 
 
