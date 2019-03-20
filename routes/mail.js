@@ -11,7 +11,6 @@ var app = express()
 
 /* GET /mail */
 router.get('/', async function (req, res, next) {
-
   // the parms object values are whats used in our handlebars display
   // for each file
   let parms = {
@@ -19,7 +18,8 @@ router.get('/', async function (req, res, next) {
     active: {
       // this will be why the tab is highlighted
       report: true
-    }
+    },
+    saveSuccess: !!req.query.success
   };
   // get token and username from input of email
   const accessToken = await authHelper.getAccessToken(req.cookies, res);

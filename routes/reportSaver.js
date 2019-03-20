@@ -3,21 +3,43 @@ var router = express.Router();
 var authHelper = require('../helpers/auth');
 var graph = require('@microsoft/microsoft-graph-client');
 var db = require('../helpers/database')
+var bodyParser = require('body-parser');
+var encodedParser = bodyParser.urlencoded({
+    extended: true
+})
 
 // Creating report object from report.js
 SERA = require('../helpers/report_Schema')
 
+
+// this will display from mongo the saved reports
 router.get('/', async (req, res) => {
     // get from mongo
     // render
     // req.query.dateFrom req.query.dateEnd
-    res.send('Render repots here..');
-})
+    console.log("======I came here")
+    // res.render('reports', function (error, html) {
+    //     if (error) {
+    //         console.log("The error is" + error);
+    //     } else {
+    //         // console.log("The view was rendered")
+    //         // console.log(html)
+    //         res.render(html);
+    //         // res.status(201).send({
+    //         //     message: "Good Job"
+    //         // });
+    //     }
+    // });
+    res.render('reports')
+});
+
+
 
 // Posting Email
 // post form with a link
 // or ajax to redirect after
 router.post('/save', async function (req, res) {
+    console.log(req.body); // nothing here empty
     let parms = {
         title: 'Reports Page',
         active: {
@@ -74,6 +96,9 @@ router.post('/save', async function (req, res) {
             //     //
             // });
             //to push everything
+
+            // here we map the values we get back from the API
+            // to each propety in our schema
             const toSave = result.value.map(value => ({
                 isRead: value.isRead,
                 subject: value.subject,
@@ -82,6 +107,7 @@ router.post('/save', async function (req, res) {
                 sentDateTime: value.sentDateTime
             }));
 
+            // now we save it to the database
             SERA.insertMany(toSave, function (error, success) {
                 if (error) {
                     console.log("There has been an error inserting", error)
@@ -89,7 +115,9 @@ router.post('/save', async function (req, res) {
                 }
                 parms.reports = result.value;
                 console.log(result);
-                res.render('reports', parms);
+                parms.saveSuccess = true
+                res.redirect('/mail?success=true')
+                // res.render('reports', parms);
             });
             // save stores into database
             // SERA.save().then(result => {
@@ -123,6 +151,7 @@ router.post('/save', async function (req, res) {
 
     //     console.log("I have been hit")
 });
+
 
 
 
