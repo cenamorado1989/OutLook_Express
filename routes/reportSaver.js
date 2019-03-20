@@ -6,18 +6,64 @@ var db = require('../helpers/database')
 var bodyParser = require('body-parser');
 var encodedParser = bodyParser.urlencoded({
     extended: true
-})
+});
+
+const JSON = require('circular-json');
+
+var json = "";
+
 
 // Creating report object from report.js
 SERA = require('../helpers/report_Schema')
 
+/*router.get('/get_reports', async (req, res) => {
+    SERA.find({}, function (error, reply) {
+        if (!error) {
+            res.send(reply);
+        } else {
+            console.log("Error fetching users")
+        }
+    });
+    console.log(results);
+    json = JSON.stringify(results);
+    res.send(json);
+});*/
 
 // this will display from mongo the saved reports
+router.post('/', async (req, res) => {
+    SERA.find({}, function (error, reply) {
+        if (!error) {
+            res.send(reply);
+        } else {
+            console.log("Error fetching users")
+        }
+    });
+
+    // Filter results
+    results = results.filter((result, index) => {
+        return !results.slice(index).find(
+            sresult => sresult.subject === result.subject
+        );
+    });
+
+    console.log(results);
+    json = JSON.stringify(results);
+    res.send(json);
+})
+
 router.get('/', async (req, res) => {
+    // let parms = {
+    //     title: 'Reports Page',
+    //     active: {
+    //         reports: true
+    //     }
+    // };
+
+
     // get from mongo
     // render
     // req.query.dateFrom req.query.dateEnd
-    console.log("======I came here")
+    console.log("I am in thet GET route")
     // res.render('reports', function (error, html) {
     //     if (error) {
     //         console.log("The error is" + error);
@@ -30,6 +76,22 @@ router.get('/', async (req, res) => {
     //         // });
     //     }
     // });
+
+    // try {
+    // This will get all data from mongo and render to reports view
+
+
+    // // parms.reports = result.value;
+    // // console.log(result);
+    // // parms.saveSuccess = true
+    // res.redirect('reports')
+    // // res.render('reports', parms);
+
+
+    // } catch (error) {
+    //     console.log(error)
+    // }
+
     res.render('reports')
 });
 
