@@ -49,7 +49,9 @@ router.post('/', async (req, res) => {
     console.log(results);
     json = JSON.stringify(results);
     res.send(json);
-})
+});
+
+
 
 router.get('/', async (req, res) => {
     let parms = {
@@ -94,6 +96,10 @@ router.get('/', async (req, res) => {
 
     res.render('reports')
 });
+
+
+
+
 
 
 
