@@ -1,9 +1,28 @@
 <div class="jumbotron">
   <h1>Outlook Express</h1>
   <p class="lead">This Application will allow you to generate a Metric Report</p>
+  <div>
+    <ul>
+      <li> The Reports Page will display your last 5 emails and and allow you to save them.
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <ul>
+      <li> My Reports will allow you to pick a time interval and retrieve those emails.
+      </li>
+    </ul>
+
+  </div>
+  <hr>
+
   {{#if user}}
   <p>Welcome {{user}}!</p>
   {{else}}
   <a class="btn btn-primary btn-large" href="{{signInUrl}}">Click here to login</a>
   {{/if}}
+
+
+
 </div>

@@ -12,32 +12,6 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
 
 
-    <!-- ... -->
-    {{!-- <script type="text/javascript" src="/bower_components/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="/bower_components/moment/min/moment.min.js"></script>
-    <script type="text/javascript" src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script type="text/javascript"
-        src="/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet"
-        href="/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" /> --}}
-
-    {{!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css" />
-    <link rel='stylesheet' href='/stylesheets/style.css' /> --}}
-
-
-    {{!-- Script for Calendar --}}
-    {{!-- <script>
-        $(function () {
-            $('.dates #usr1').datepicker({
-                'format': 'yyyy-mm-dd',
-                'autoclose': true
-            });
-        });
-    </script>
-</head> --}}
 
 </head>
 
@@ -46,6 +20,7 @@
     {{!-- Start of Report --}}
     <h2> Report</h2>
 
+    {{!-- Post form for Date Picker --}}
     <form id="post_form" method="GET" action="/routes/reportSaver.js">
         <div class="date-picker">
             <h3>Date</h3>
@@ -56,12 +31,13 @@
         <hr>
 
         {{!-- Button to save the Report --}}
-        <button type="submit" class="btn btn-danger">Click to Get Reports</button>
-        <button type="submit" class="btn btn-danger clear-table">Clear</button>
+        <button id="bt1" type="submit" class="btn btn-danger">Click to Get Reports</button>
+        <button id="bt2" type="submit" class="btn btn-danger clear-table">Clear</button>
     </form>
 
     <hr>
 
+    {{!-- Table that you see on the page --}}
     <table class="table hidden">
         <thead class="thead-light">
             <th scope="col">From</th>
@@ -77,6 +53,7 @@
             {{!-- If there are no read messages --}}
             <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
                 <td title="{{this.from.emailAddress.address}}">{{this.from.emailAddress.name}}</td>
+                <td>{{this.from.emailAddress.name}}</td>
                 <td>{{this.subject}}</td>
                 <td>{{this.receivedDateTime}}</td>
                 <td>{{this.isRead}}</td>
@@ -88,59 +65,6 @@
 
     {{!-- End of Report --}}
 
-
-    {{!-- 
-    <div class="container">
-
-        <div class="dates" style="margin-top:100px;color:#2471a3;">
-            <label>Choose DOB</label>
-            <input type="text" style="width:200px;background-color:#aed6f1;" class="form-control" id="usr1"
-                name="event_date" placeholder="YYYY-MM-DD" autocomplete="off">
-        </div>
-    </div> --}}
-
-    {{!-- 
-    <div style="overflow:hidden;">
-        <div class="form-group">
-            <div class="row">
-                <div class="col-md-8">
-                    <div id="datetimepicker12"></div>
-                </div>
-            </div>
-        </div>
-        <script type="text/javascript">
-            $(function () {
-                $('#datetimepicker12').datetimepicker({
-                    inline: true,
-                    sideBySide: true
-                });
-            });
-        </script>
-    </div> --}}
-
-
-    <vaadin-date-picker id="start" label="Start"></vaadin-date-picker>
-    <vaadin-date-picker id="end" label="End"></vaadin-date-picker>
-
-    <script>
-        customElements.whenDefined('vaadin-date-picker').then(function () {
-            var start = document.querySelector('#start');
-            var end = document.querySelector('#end');
-
-            start.addEventListener('change', function () {
-                end.min = start.value;
-
-                // Open the second date picker when the user has selected a value
-                if (start.value) {
-                    end.open();
-                }
-            });
-
-            end.addEventListener('change', function () {
-                start.max = end.value;
-            });
-        });
-    </script>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -204,7 +128,7 @@
             };
 
             // Minimum validation for dates
-            if((dates.startdate && dates.startdate > dates.enddate) ||
+            if ((dates.startdate && dates.startdate > dates.enddate) ||
                 (dates.enddate && dates.enddate < dates.startdate)) {
                 return alert('Use valid dates!');
             }
@@ -221,11 +145,12 @@
             }).map(function (row) {
                 return `
                     <tr>
-                        <td>&nbsp;</td>
+                        {{!-- <td>&nbsp;</td> --}}
+                        <td>${row.name || '-'}</td>
                         <td>${row.subject || '-'}</td>
                         <td>${row.receivedDateTime || '-'}</td>
                         <td>${row.isRead || '-'}</td>
-                        <td>${row.sendDateTime || '-'}</td>
+                        <td>${row.sentDateTime || '-'}</td>
                     </tr>
                 `;
             });
@@ -235,21 +160,13 @@
         });
 
         // Clear click
-        $('.clear-table').on('click', function() {
+        $('.clear-table').on('click', function () {
             // Clears table
             $('table tbody').html('<tr><td colspan="5">Make a search</td></tr>');
-            
+
             // Clears inputs
             $('input').val('');
         });
-
-        /*
-                    $.get('/get_reports', data, function(response) {
-                        console.log(response);
-        
-                        // Shows results in table
-                    });*/
-
     </script>
 </body>
 

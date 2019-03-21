@@ -19,28 +19,32 @@
       aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item{{#if active.home}} active{{/if}}">
           <a class="nav-link" href="/">Home</a>
         </li>
 
-        {{!-- uncomment later --}}
-        <li class="nav-item{{#if active.home}} active{{/if}}">
-        <li>
-          <a class="nav-link" href="/reportSaver">My Reports</a>
-        </li>
-
-
         {{!-- if you remove the if user than we will see all tabs --}}
-        {{#if user}}
+        {{!-- {{#if user}} --}}
         {{!-- active just hightlights the tab we are on --}}
         <li class="nav-item{{#if active.inbox}} active {{/if}}">
           <a class="nav-link" href="/mail">Report</a>
         </li>
+        {{!-- {{/if}} --}}
 
-        {{/if}}
+        {{!-- {{#if user}} --}}
+        <li class="nav-item{{#if active.reports}} active{{/if}}">
+        <li>
+          <a class="nav-link" href="/reportSaver">My Reports</a>
+        </li>
+        {{!-- {{/if}} --}}
+
+        {{!-- end of <ul> --}}
       </ul>
+
       <ul class="navbar-nav justify-content-end">
         {{#if user}}
         <li class="nav-item dropdown">

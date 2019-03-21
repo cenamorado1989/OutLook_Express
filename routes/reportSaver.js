@@ -52,12 +52,12 @@ router.post('/', async (req, res) => {
 })
 
 router.get('/', async (req, res) => {
-    // let parms = {
-    //     title: 'Reports Page',
-    //     active: {
-    //         reports: true
-    //     }
-    // };
+    let parms = {
+        title: 'Report',
+        active: {
+            report: true
+        }
+    };
 
 
     // get from mongo
@@ -103,9 +103,9 @@ router.get('/', async (req, res) => {
 router.post('/save', async function (req, res) {
     console.log(req.body); // nothing here empty
     let parms = {
-        title: 'Reports Page',
+        title: 'Report',
         active: {
-            reports: true
+            report: true
         }
     };
     console.log('In save');
