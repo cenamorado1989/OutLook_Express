@@ -64,27 +64,55 @@
       </ul>
     </div>
   </nav> 
+
   {{#if user}}
 
+  
 
   {{else}}
-<h1>Real Time Performance Evaluation</h1>
-  <section class="container" style="text-align:center">
-    <div id="container2" >
-      <div id="box1">
-        <i class="iconSpace fas fa-envelope-open-text fa-7x"></i>
-        <p class="pInBox">Utilize email statistics daily</p>
-        </div>
-      <div id="box2">
-        <i class="iconSpace fas fa-chart-line fa-7x" style="padding-top:90px"></i>
+<h1>Striving to improve instructor-student communication</h1>
+
+<section class="container" style="text-align:center">
+  <div id="container2">
+    <div id="box1" style="padding-left:120px">
+        <i class="iconSpace fas fa-chart-line fa-8x" style="padding-top:65px"></i>
         <p class="pInBox">Improve performance</p>
-        </div>
-      <div id="box3">
-        <i class="iconSpace fas fa-calendar-alt fa-7x"></i>
-        <p class="pInBox">Schedule Reports</p>
-        </div>
     </div>
+    <div id="box2" style="width:75%">
+        <p id="firstP" style="padding-right:60px">
+          The goal of SERA is to improve instructor-student communication by providing<br> 
+          instructors with assessement reports, grading instructor response rates to<br> 
+          student email reception rates, in an effort to ensure education quality.<br>
+        </p>
+    </div>
+  </div>
+</section>
+
+  <section class="container" style="text-align:center">
+
+      <div id="box3" style=" width:50%">
+        <i class="iconSpace fas fa-envelope-open-text fa-7x"></i>
+        <p class="pInBox2">Recieve response assessement</p>
+      </div>
+      
+      <div id="box4" style=" width:50%">
+        <i class="iconSpace2 fas fa-calendar-alt fa-7x"></i>
+        <p class="pInBox2" style="padding-right: 10px">Schedule assessement Reports</p>
+      </div>
+
   </section>
+  
+<div class="jumbotron container" style="text-align:center height:100px">
+  
+   <h2>Connect with Outlook to begin</h2>
+
+  <hr>
+  <a class="btn btn-primary btn-large" href="{{signInUrl}}">Sign In</a>
+
+</div>
+<footer>
+  <p>SERA faculty assessement, Copyright &copy; 2019</p>
+</footer>
   {{/if}}
 
   <!-- Main body -->
@@ -114,7 +142,4 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"></script>
 </body> 
-<footer>
-  <p>SERA faculty assessement, Copyright &copy; 2019</p>
-</footer>
 </html>

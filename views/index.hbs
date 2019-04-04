@@ -1,16 +1,10 @@
-<div class="jumbotron" style="text-align:center">
-  <h2>Personal assessement at your finger tips</h2>
+{{#if user}}
+<div class="jumbotron container" style="text-align:center height:100px">
+    <p>Welcome {{user}}!</p>
+  </div>
+  <footer id="footer">
+  <p>SERA faculty assessement, Copyright &copy; 2019</p>
+</footer>
+{{else}}
 
-  
-  
-  <hr>
-
-  {{#if user}}
-  <p>Welcome {{user}}!</p>
-  {{else}}
-  <a class="btn btn-primary btn-large" href="{{signInUrl}}">Click here to login</a>
-  {{/if}}
-
-
-
-</div>
+{{/if}}
