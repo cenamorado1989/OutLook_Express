@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap core CSS -->
+
+    <link rel="import" href="/bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
+
+          <link rel='stylesheet' href='/stylesheets/style.css' />
+
+
+
+
+</head>
+
+<body>
+
+    {{!-- Start of Report --}}
+    <h2> Report</h2>
+
+    {{!-- Post form for Date Picker --}}
+    <form id="post_form" method="GET" action="/routes/reportSaver.js">
+        <div class="date-picker">
+            <h3>Date</h3>
+            <input placeholder="Initial date" type="text" class="date startdate"> -
+            <input placeholder="End date" type="text" class="date enddate">
+        </div>
+
+        <hr>
+
+        {{!-- Button to save the Report --}}
+        <button id="bt1" type="submit" class="btn btn-danger">Click to Get Reports</button>
+        <button id="bt2" type="submit" class="btn btn-danger clear-table">Clear</button>
+    </form>
+
+    <hr>
+
+    {{!-- Table that you see on the page --}}
+    <table class="table hidden">
+        <thead class="thead-light">
+            <th scope="col">From</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Received</th>
+            <th scope="col">isRead</th>
+            <th scope="col">Sent Time</th>
+            {{!-- <th scope="col">Count</th> --}}
+        </thead>
+        <tbody>
+            {{!-- here we are looping through the reports array from the api --}}
+            {{#each reports}}
+            {{!-- If there are no read messages --}}
+            <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
+                <td title="{{this.from.emailAddress.address}}">{{this.from.emailAddress.name}}</td>
+                <td>{{this.from.emailAddress.name}}</td>
+                <td>{{this.subject}}</td>
+                <td>{{this.receivedDateTime}}</td>
+                <td>{{this.isRead}}</td>
+                <td>{{this.sentDateTime}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+
+    {{!-- End of Report --}}
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        if ('{{saveSuccess}}') {
+            toastr["success"]("Saved", "Report")
+        }
+
+        // Runs date picker plugin
+        $('input.date').datepicker();
+
+        // Gets data
+        var data;
+        fetch('/reportSaver', {
+            // data: dates,
+            method: 'POST'
+        }).then(function (response) {
+            return response.json();
+        }).then(function (json) {
+            data = json;
+        });
+
+        // Form submit
+        $('form').on('submit', function (event) {
+            event.preventDefault();
+
+            var dates = {
+                startdate: new Date($('.startdate').val()),
+                enddate: new Date($('.enddate').val())
+            };
+
+            // Minimum validation for dates
+            if ((dates.startdate && dates.startdate > dates.enddate) ||
+                (dates.enddate && dates.enddate < dates.startdate)) {
+                return alert('Use valid dates!');
+            }
+
+            // Filter rows
+            var rows = data.filter(function (register) {
+                var date = new Date(register.receivedDateTime);
+
+                return (
+                    (!dates.startdate || date > dates.startdate) &&
+                    (!dates.enddate || date < dates.enddate)
+                );
+                // Convert to HTML
+            }).map(function (row) {
+                return `
+                    <tr>
+                        {{!-- <td>&nbsp;</td> --}}
+                        <td>${row.name || '-'}</td>
+                        <td>${row.subject || '-'}</td>
+                        <td>${row.receivedDateTime || '-'}</td>
+                        <td>${row.isRead || '-'}</td>
+                        <td>${row.sentDateTime || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            // Show content
+            $('table tbody').html(rows.join(''));
+        });
+
+        // Clear click
+        $('.clear-table').on('click', function () {
+            // Clears table
+            $('table tbody').html('<tr><td colspan="5">Make a search</td></tr>');
+
+            // Clears inputs
+            $('input').val('');
+        });
+    </script>
+</body>
+
+</html>

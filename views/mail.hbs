@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css" />
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body>
+
+
+  <h2> Reports</h2>
+  <table class="table1">
+    <thead class="thead-light">
+      <th scope="col">From</th>
+      <th scope="col">Subject</th>
+      <th scope="col">Received</th>
+      <th scope="col">isRead</th>
+      <th scope="col">Sent Time</th>
+      {{!-- <th scope="col">Count</th> --}}
+
+
+    </thead>
+    <tbody>
+      {{!-- here we are looping through the results array from the api --}}
+      {{#each mohamed}}
+      {{!-- If there are no read messages --}}
+      <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
+        <td title="{{this.from.emailAddress.address}}">{{this.from.emailAddress.name}}</td>
+        <td>{{this.subject}}</td>
+        <td>{{this.receivedDateTime}}</td>
+        <td>{{this.isRead}}</td>
+        <td>{{this.sentDateTime}}</td>
+
+
+
+
+
+
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  {{!-- Button to save the Report --}}
+  <form id="post_form" method="POST" action="reportSaver/save" style="margin-top:15px">
+    <button type="submit" class="btn btn-primary">Click to Save Report</button>
+  </form>
+  {{!-- <button type="button" class="btn btn-primary">Save Report</button>
+ --}}
+
+  <script>
+
+    console.log("Hello from mail");
+  </script>
+
+
+  <!-- Bootstrap core JavaScript
+    ================================================== -->
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script>
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "newestOnTop": false,
+      "progressBar": false,
+      "positionClass": "toast-top-center",
+      "preventDuplicates": false,
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
+    if ('{{saveSuccess}}' === 'true') {
+      console.log("============value>", '{{saveSuccess}}')
+      toastr["success"]("Saved", "Report")
+    }
+  </script>
+</body>
+
+</html>
