@@ -32,14 +32,13 @@
         {{!-- if you remove the if user than we will see all tabs --}}
         {{!-- {{#if user}} --}}
         {{!-- active just hightlights the tab we are on --}}
-        <li class="nav-item{{#if active.inbox}} active {{/if}}">
+        <li class="nav-item{{#if active.inbox}} active{{/if}}">
           <a class="nav-link" href="/mail">Report</a>
         </li>
         {{!-- {{/if}} --}}
 
         {{!-- {{#if user}} --}}
         <li class="nav-item{{#if active.reports}} active{{/if}}">
-        <li>
           <a class="nav-link" href="/reportSaver">My Reports</a>
         </li>
         {{!-- {{/if}} --}}
@@ -69,7 +68,7 @@
 
   
 
-  {{else}}
+  {{else if active.home}}
 <h1>Striving to improve instructor-student communication</h1>
 
 <section class="container" style="text-align:center">
