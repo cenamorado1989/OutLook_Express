@@ -55,8 +55,9 @@ router.get('/', async (req, res) => {
     let parms = {
         title: 'Report',
         active: {
-            report: true
-        }
+            report2: true
+        },
+        saveSuccess: !!req.query.success
     };
 
 
