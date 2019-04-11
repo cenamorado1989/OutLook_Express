@@ -2,3 +2,150 @@ pre {
   word-wrap: break-word;
   white-space: pre-wrap;
 }
+
+.container {
+  width: 100%;
+  height: 200px;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+}
+
+#container2 {
+  background-size: cover;
+  width: 100%;
+  height: 200px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  background-color: #35424a;
+
+}
+
+#tbod {
+  background: rgba(255, 255, 255, .9);
+}
+
+.table1 {
+  background: rgba(255, 255, 255, .9);
+  border-radius: 10px;
+}
+
+#background_image {
+  background: url(image2.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: 100% 510px;
+  background-position: center top;
+}
+
+.iconSpace {
+  padding-top: 40px;
+  padding-left: 20px;
+  color: #cccccc;
+}
+
+.iconSpace2 {
+  padding-top: 40px;
+  padding-right: 20px;
+  color: #cccccc;
+}
+
+.pInBox {
+  color: #cccccc;
+  padding-top: 10px;
+  width: 150%;
+}
+
+.pInBox2 {
+  color: #cccccc;
+  padding-top: 10px;
+  width: 100%;
+}
+
+#firstP {
+  color: #cccccc;
+  padding-top: 90px;
+  font-size: 18px;
+}
+
+#box1 {
+  height: 200px;
+  width: 250px;
+  text-align: center;
+  float: left;
+}
+
+#box2 {
+  height: 200px;
+  width: 250px;
+  text-align: center;
+  float: right;
+}
+
+#box3 {
+  height: 200px;
+  width: 250px;
+  text-align: center;
+  float: left;
+  padding-left: 120px;
+}
+
+#box4 {
+  height: 200px;
+  width: 250px;
+  text-align: center;
+  float: right;
+  padding-right: 120px;
+}
+
+body {
+  font: 15px/1.5 Arial, Helvetica, sans-serif;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+h1 {
+  text-align: center;
+  color: #cccccc;
+}
+
+h2 {
+  text-align: center;
+  color: #cccccc;
+}
+
+h3 {
+  text-align: center;
+  color: #cccccc;
+}
+
+.nav {
+  background: #35424a;
+  color: #ffffff;
+  padding-top: 30px;
+  min-height: 70px;
+  border-bottom: #cccccc 3px solid;
+}
+
+nav a:hover {
+  color: #cccccc;
+  font-weight: bold;
+}
+
+footer {
+  margin-top: 10px;
+  color: #cccccc;
+}

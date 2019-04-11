@@ -32,7 +32,7 @@ router.post('/', async (req, res) => {
                     return date > startdate && date < enddate;
                 });
             }
-            
+
 
             // Sends result
             res.send(reply);

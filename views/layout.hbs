@@ -3,18 +3,21 @@
 
 <head>
   <meta charset="utf-8">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>{{title}}</title>
+  <title>{{title}} SERA Faculty Assessement | Welcome</title>
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='stylesheets/style.css' />
 </head>
 
-<body>
+<body id="background_image">
   <!-- Nav bar -->
   <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-    <a class="navbar-brand" href="/">Outlook Express</a>
+    <a class="navbar-brand" href="/">SERA</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
       aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -75,20 +78,67 @@
     </div>
   </nav>
 
+
+  {{#if user}}
+  {{else if  active.home}}
+
+  <h1>Striving to improve instructor-student communication</h1>
+
+
+  <section class="container" style="text-align:center">
+    <div id="container2">
+      <div id="box1" style="padding-left:120px">
+        <i class="iconSpace fas fa-chart-line fa-8x" style="padding-top:65px"></i>
+        {{!-- <p class="pInBox">Improve performance</p> --}}
+      </div>
+      <div id="box2" style="width:75%">
+      </div>
+    </div>
+  </section>
+
+  <section class="container" style="text-align:center">
+
+    {{!-- <div id="box3" style=" width:50%"> --}}
+    <i class="iconSpace fas fa-envelope-open-text fa-7x"></i>
+    <p class="pInBox2">Recieve response assessement</p>
+    {{!-- </div> --}}
+
+    {{!-- <div id="box4" style=" width:50%"> --}}
+    <i class="iconSpace2 fas fa-calendar-alt fa-7x"></i>
+    <p class="pInBox2" style="padding-right: 10px">Schedule assessement Reports</p>
+    {{!-- </div> --}}
+
+  </section>
+
+  {{!-- <div class="jumbotron container" style="text-align:center height:100px"> --}}
+
+  {{!-- <h2>Connect with Outlook to begin</h2> --}}
+
+  <hr>
+  <a class="btn btn-primary btn-large" href="{{signInUrl}}">Sign In</a>
+
+  {{!-- </div> --}}
+  <footer>
+    <p>SERA faculty assessement, Copyright &copy; 2019</p>
+  </footer>
+  {{/if}}
+
+  {{!-- <!-- Main body -->
+  <main role="main" class="container"> --}}
+
+
+
+
+
+
+
   <!-- Main body -->
   <main role="main" class="container">
     {{{body}}}
 
-    {{!-- <!-- Debug output -->
-    {{#if debug}}
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Debug</h5>
-        <pre class="bg-light border p-3"><code>{{debug}}</code></pre>
-      </div>
-    </div>
-    {{/if}}
-  </main> --}}
+
+
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

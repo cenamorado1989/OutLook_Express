@@ -11,6 +11,7 @@
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
 
+    <link rel='stylesheet' href='stylesheets/style.css' />
 
 
 </head>
@@ -23,7 +24,7 @@
     </hr>
 
     {{!-- Post form for Date Picker --}}
-    <form id="post_form" method="post" action="/reportSaver/filter">
+    <form id="post_form" method="GET" action="">
         <div class="date-picker">
             <h3>Select Date</h3>
             <input placeholder="Initial date" type="text" class="date startdate"> -
@@ -50,7 +51,7 @@
             <th scope="col">Sent Time</th>
             {{!-- <th scope="col">Count</th> --}}
         </thead>
-        <tbody>
+        <tbody id="tbod">
             {{!-- here we are looping through the reports array from the api --}}
             {{#each reports}}
             {{!-- If there are no read messages --}}
@@ -139,7 +140,7 @@
             // Show content
             $('table tbody').html(rows.join(''));
 
-            {{!-- This displays the number of emails --}}
+            { { !--This displays the number of emails-- } }
             $('#total-count').html(rows.length)
         }
 
