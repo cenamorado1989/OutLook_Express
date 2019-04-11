@@ -10,58 +10,9 @@ var json = "";
 // Creating report object from report.js
 SERA = require('../helpers/report_Schema')
 
-
-// this will display from mongo the saved reports
-router.post('/', async (req, res) => {
-    let parms = {
-        title: 'Report',
-        active: {
-            report: true
-        }
-    };
-
-    SERA.find({}, function (error, reply) {
-        if (!error) {
-            if (req.query.startdate && req.query.enddate) {
-                const startdate = new Date(req.query.startdate);
-                const enddate = new Date(req.query.enddate);
-
-                // Filters by date range
-                reply = reply.filter((result) => {
-                    const date = new Date(result.receivedDateTime);
-                    return date > startdate && date < enddate;
-                });
-            }
-
-
-            // Sends result
-            res.send(reply);
-        } else {
-            console.log("Error fetching users")
-        }
-    });
-
-    // // Filter results
-    // I commented this to see if it made changes
-    // uncomment later if you feel that you should
-
-    // results = results.filter((result, index) => {
-    //     return !results.slice(index).find(
-    //         sresult => sresult.subject === result.subject
-    //     )
-    // });
-
-    // console.log("This is the results " + results);
-
-    // uncomment this. goes with results
-    // json = JSON.stringify(results);
-    // res.send(json);
-
-
-    // res.send(JSON.stringify(req.query));
-    // res.send('test')
-});
-
+/*
+    When we go to the My Reports tab, 50 most recent reports are shown.
+*/
 router.get('/', async (req, res) => {
     let parms = {
         title: 'Report',
@@ -69,6 +20,10 @@ router.get('/', async (req, res) => {
             myReport: true
         }
     };
+    const checkIFAlreadyHasData = await SERA.find().countDocuments();
+    if (checkIFAlreadyHasData) {
+        return res.render('reports', parms);
+    }
 
     // we wait for the access token whhich is stored in the request.cokies
     const accessToken = await authHelper.getAccessToken(req.cookies, res);
@@ -98,7 +53,7 @@ router.get('/', async (req, res) => {
                 .api('/me/mailfolders/inbox/messages?$search= "from:@student.gsu.edu"')
                 //api("/me/mailfolders/inbox/messages?$filter=from/emailaddress/address eq '@student.gsu.edu'")
                 //api("/me/messages?$filter=from/emailaddress/address eq '@npm.js.com'")
-                .top(5)
+                .top(1)
                 .select('subject,from,receivedDateTime,isRead,sentDateTime')
                 // .orderby('receivedDateTime DESC')
                 .count(true)
@@ -107,6 +62,32 @@ router.get('/', async (req, res) => {
             // now in our autoreports.hbs we loop through the mohamed value
             // which is everthing we get back from the API
             parms.mohamed = result.value;
+
+
+            /*
+                What I am trying to do here is that as soon as the API
+                is called when we go to the page, we save everything.
+                Now that we saved it, we should only get back mails
+                based on the date we select.
+            */
+            const toSave = result.value.map(value => ({
+                isRead: value.isRead,
+                subject: value.subject,
+                // from: value.from.emailAddress,
+                receivedDateTime: value.receivedDateTime,
+                sentDateTime: value.sentDateTime
+            }));
+
+            // now we save it to the database
+            SERA.insertMany(toSave, function (error) {
+                if (error) {
+                    console.log("There has been an error inserting", error)
+                    return res.render('error', {})
+                } else {
+                    console.log("You have successfully saved to the database")
+                }
+
+            });
 
 
 
@@ -137,6 +118,146 @@ router.get('/', async (req, res) => {
 
 
 
+// this will display from mongo the saved reports
+/*
+   this will display from mongo the saved reports
+
+    What I need to do here is instead of pulling from the database,
+    I need to get the emails directly from the API and then filter it
+    based on the date. After that display the number of emails recieved, sent, and the average
+    average = recieved/sent or vice versa
+*/
+router.post('/', async (req, res) => {
+    let parms = {
+        title: 'Report',
+        active: {
+            report: true
+        }
+    };
+    const {
+        startdate,
+        enddate
+    } = req.body;
+    console.log("========", req.body);
+    if (!startdate && !enddate) {
+        res.status(400);
+        return res.send('Please select start and end dates');
+    }
+    /*
+        Here we query the db and get based on the selected dates
+        Uncomment to go back to old way
+   
+      */
+    try {
+        const findDates = await SERA.find().lean().exec();
+        const parseStartdate = new Date(startdate);
+        const parseEnddate = new Date(enddate);
+
+        // Filters by date range
+
+        const filterDateSelections = findDates.filter((result) => {
+            const date = new Date(result.receivedDateTime).getTime();
+
+            return date >= parseStartdate.getTime() && date <= parseEnddate.getTime();
+        });
+        return res.send(filterDateSelections);
+    } catch (e) {
+        console.log(e, 'an eror');
+    }
+
+    SERA.find({}, function (error, reply) {
+        if (!error) {
+
+
+
+            // Sends result
+            res.send(reply);
+            console.log("I am sending the filtered emails")
+        } else {
+            console.log("There is a problem filtering emails")
+        }
+    });
+
+
+
+
+    // // I am trying to get the the API directly instead of the DB so I call the API here
+    // const accessToken = await authHelper.getAccessToken(req.cookies, res);
+    // const userName = req.cookies.graph_user_name;
+
+
+
+    // if (accessToken && userName) {
+    //     parms.user = userName;
+
+    //     // Initialize Graph client
+    //     const client = graph.Client.init({
+    //         authProvider: (done) => {
+    //             done(null, accessToken);
+    //         }
+    //     });
+
+    //     try {
+    //         // Get the 10 newest messages from inbox
+    //         const result = await client
+    //             .api('/me/mailfolders/inbox/messages?$search= "from:@student.gsu.edu"')
+    //             //api("/me/mailfolders/inbox/messages?$filter=from/emailaddress/address eq '@student.gsu.edu'")
+    //             //api("/me/messages?$filter=from/emailaddress/address eq '@npm.js.com'")
+    //             .top(50)
+    //             .select('subject,from,receivedDateTime,isRead,sentDateTime')
+    //             // .orderby('receivedDateTime DESC')
+    //             .count(true)
+    //             .get();
+
+
+
+
+    //         // the parms.mohamed is what the mail.hbs uses to loop through the 
+    //         // result array and then display it
+    //         parms.mohamed = result.value;
+
+    //         // The file to display what we get back from the results.value
+    //         res.render('reports', parms);
+
+    //         console.log(result.value)
+
+
+
+    //     } catch (err) {
+    //         console.error(err);
+    //         parms.message = 'Error retrieving messages';
+    //         parms.error = {
+    //             status: `${err.code}: ${err.message}`
+    //         };
+    //         parms.debug = JSON.stringify(err.body, null, 2);
+    //         res.render('error', parms);
+    //     }
+    //     // if we dont have the accessToken and username?
+    // } else {
+    //     // Redirect to home
+    //     res.redirect('/');
+    // }
+
+    // // Filter results
+    // I commented this to see if it made changes
+    // uncomment later if you feel that you should
+
+    // results = results.filter((result, index) => {
+    //     return !results.slice(index).find(
+    //         sresult => sresult.subject === result.subject
+    //     )
+    // });
+
+    // console.log("This is the results " + results);
+
+    // uncomment this. goes with results
+    // json = JSON.stringify(results);
+    // res.send(json);
+
+
+    // res.send(JSON.stringify(req.query));
+    // res.send('test')
+});
 
 
 
@@ -153,10 +274,15 @@ router.get('/', async (req, res) => {
 
 
 
-// Posting Email
-// post form with a link
-// or ajax to redirect after
-// This route is for when the user clicks the save report button
+
+
+
+
+
+/* Posting Email
+Dont mess with this. Works fine.
+This route is for when the user clicks the save report button
+*/
 router.post('/save', async function (req, res) {
     console.log(req.body); // nothing here empty
     let parms = {

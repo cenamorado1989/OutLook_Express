@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap core CSS -->
 
-    <link rel="import" href="/bower_components/vaadin-date-picker/vaadin-date-picker.html">
+    {{!-- <link rel="import" href="/bower_components/vaadin-date-picker/vaadin-date-picker.html"> --}}
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
@@ -24,7 +24,7 @@
     </hr>
 
     {{!-- Post form for Date Picker --}}
-    <form id="post_form" method="GET" action="">
+    <form id="post_form" method="post" action="/reportSaver">
         <div class="date-picker">
             <h3>Select Date</h3>
             <input placeholder="Initial date" type="text" class="date startdate"> -
@@ -43,8 +43,8 @@
     {{!-- Table that you see on the page --}}
     <table class="table hidden">
         <thead class="thead-light">
-            <th scope="col">From</th>
-            <th scope="col"></th>
+            {{!-- <th scope="col">From</th> --}}
+            <th scope="col">Name</th>
             <th scope="col">Subject</th>
             <th scope="col">Received</th>
             <th scope="col">isRead</th>
@@ -53,10 +53,9 @@
         </thead>
         <tbody id="tbod">
             {{!-- here we are looping through the reports array from the api --}}
-            {{#each reports}}
+            {{#each mohamed}}
             {{!-- If there are no read messages --}}
             <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
-                <td title="{{this.from.emailAddress.address}}">{{this.from.emailAddress.name}}</td>
                 <td>{{this.from.emailAddress.name}}</td>
                 <td>{{this.subject}}</td>
                 <td>{{this.receivedDateTime}}</td>
@@ -75,7 +74,6 @@
     ================================================== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <!--
-
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
@@ -88,46 +86,17 @@
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
     <script>
-        toastr.options = {
-            "closeButton": false,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": false,
-            "positionClass": "toast-top-center",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        }
-        if ('{{saveSuccess}}') {
-            toastr["success"]("Saved", "Report")
-        }
 
         // Runs date picker plugin
         $('input.date').datepicker();
-
         // Gets data
         var data;
-        fetch('/reportSaver', {
-            // data: dates,
-            method: 'POST'
-        }).then(function (response) {
-            return response.json();
-        }).then(function (json) {
-            data = json;
-        });
 
         const updateView = (rows) => {
             rows = rows.map(function (row) {
                 return `
                     <tr>
-                        <td>${row.from}</td>
+                        <td> ${row.from}</td>
                         <td>${row.name || '-'}</td>
                         <td>${row.subject || '-'}</td>
                         <td>${row.receivedDateTime || '-'}</td>
@@ -136,48 +105,62 @@
                     </tr>
                 `;
             });
-
             // Show content
+            // This displays the number of emails
+            //  $('#total-count').html(rows.length)
+
             $('table tbody').html(rows.join(''));
 
-            { { !--This displays the number of emails-- } }
             $('#total-count').html(rows.length)
         }
-
         // Form submit
         $('form').on('submit', function (event) {
             event.preventDefault();
+
+
 
             var dates = {
                 startdate: new Date($('.startdate').val()),
                 enddate: new Date($('.enddate').val())
             };
+            fetch('/reportSaver', {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dates),
+                method: 'POST'
+            }).then(function (response) {
+                return response.json();
 
+            }).then(result => {
+                console.log(result);
+                data = result.filter(function (register) {
+                    var date = new Date(register.receivedDateTime);
+                    return (
+                        (!dates.startdate || date > dates.startdate) &&
+                        (!dates.enddate || date < dates.enddate)
+                    );
+                    // Convert to HTML
+                });
+                // Filter rows
+                console.log("== dates", data)
+
+                var rows = data;
+                console.log(rows);
+                // This is updates the view based on results we get back
+                updateView(rows)
+            })
             // Minimum validation for dates
             if ((dates.startdate && dates.startdate > dates.enddate) ||
                 (dates.enddate && dates.enddate < dates.startdate)) {
                 return alert('Use valid dates!');
             }
 
-            // Filter rows
-            var rows = data.filter(function (register) {
-                var date = new Date(register.receivedDateTime);
-
-                return (
-                    (!dates.startdate || date > dates.startdate) &&
-                    (!dates.enddate || date < dates.enddate)
-                );
-                // Convert to HTML
-            })
-            // This is updates the view based on results we get back
-            updateView(rows)
         });
-
         // Clear click
         $('.clear-table').on('click', function () {
             // Clears table
-            $('table tbody').html('<tr><td colspan="5">Make a search</td></tr>');
-
+            $('table tbody').html('<tr><td colspan="5"></td></tr>');
             // Clears inputs
             $('input').val('');
         });
