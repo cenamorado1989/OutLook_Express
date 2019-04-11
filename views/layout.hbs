@@ -23,6 +23,7 @@
 
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav mr-auto">
+
         <li class="nav-item{{#if active.home}} active{{/if}}">
           <a class="nav-link" href="/">Home</a>
         </li>
@@ -30,17 +31,28 @@
         {{!-- if you remove the if user than we will see all tabs --}}
         {{!-- {{#if user}} --}}
         {{!-- active just hightlights the tab we are on --}}
-        <li class="nav-item{{#if active.inbox}} active {{/if}}">
+
+        {{!-- {{#if user}} --}}
+        <li class="nav-item {{#if active.report}} active {{/if}}">
           <a class="nav-link" href="/mail">Report</a>
+        </li>
+        {{!-- {{else}} --}}
+        {{!-- <li>
+          <a class="nav-link" href="/mail">Report</a>
+        </li> --}}
+
+        {{!-- {{/if}} --}}
+
+
+        {{!-- {{#if user}} --}}
+        <li class="nav-item{{#if active.myReport}} active{{/if}}">
+          <a class=" nav-link" href="/reportSaver">My Reports</a>
         </li>
         {{!-- {{/if}} --}}
 
-        {{!-- {{#if user}} --}}
-        <li class="nav-item{{#if active.report}} active{{/if}}">
-        <li>
-          <a class="nav-link" href="/reportSaver">My Reports</a>
+        <li class="nav-item{{#if active.schedule}} active{{/if}}">
+          <a class="nav-link" href="/autoreport"> Report Scheduler</a>
         </li>
-        {{!-- {{/if}} --}}
 
         {{!-- end of <ul> --}}
       </ul>

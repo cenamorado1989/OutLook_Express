@@ -43,7 +43,7 @@ router.get('/', async function (req, res, next) {
         .api('/me/mailfolders/inbox/messages?$search= "from:@student.gsu.edu"')
         //api("/me/mailfolders/inbox/messages?$filter=from/emailaddress/address eq '@student.gsu.edu'")
         //api("/me/messages?$filter=from/emailaddress/address eq '@npm.js.com'")
-        .top(5)
+        .top(50)
         .select('subject,from,receivedDateTime,isRead,sentDateTime')
         // .orderby('receivedDateTime DESC')
         .count(true)
@@ -59,7 +59,7 @@ router.get('/', async function (req, res, next) {
       // The file to display what we get back from the results.value
       res.render('mail', parms);
 
-
+      console.log(result.value)
 
 
 

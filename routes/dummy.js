@@ -9,12 +9,12 @@ var my_json = {
             sentDateTime: '2019-03-09T03:45:44Z',
             subject: 'Re: hw3',
             isRead: true,
-            from: {
+            from: JSON.stringify({
                 emailAddress: {
                     name: 'Qing Su',
                     address: 'qsu3@student.gsu.edu'
                 }
-            }
+            })
         },
         {
             '@odata.etag': 'W/"CQAAAA=="',
@@ -23,12 +23,12 @@ var my_json = {
             sentDateTime: '2019-03-04T12:52:51Z',
             subject: 'resume',
             isRead: true,
-            from: {
+            from: JSON.stringify({
                 emailAddress: {
                     name: 'Mohamed A Ali',
                     address: 'mali30@student.gsu.edu'
                 }
-            }
+            })
         },
         {
             '@odata.etag': 'W/"CQAAAA=="',
@@ -37,12 +37,12 @@ var my_json = {
             sentDateTime: '2019-03-01T17:49:11Z',
             subject: 'test',
             isRead: true,
-            from: {
+            from: JSON.stringify({
                 emailAddress: {
                     name: 'Mohamed A Ali',
                     address: 'mali30@student.gsu.edu'
                 }
-            }
+            })
         },
         {
             '@odata.etag': 'W/"CQAAAA=="',
@@ -51,12 +51,12 @@ var my_json = {
             sentDateTime: '2019-02-28T22:10:01Z',
             subject: '',
             isRead: true,
-            from: {
+            from: JSON.stringify({
                 emailAddress: {
                     name: 'Mohamed A Ali',
                     address: 'mali30@student.gsu.edu'
                 }
-            }
+            })
         },
         {
             '@odata.etag': 'W/"CQAAAA=="',
@@ -65,12 +65,12 @@ var my_json = {
             sentDateTime: '2019-02-26T22:22:42Z',
             subject: '',
             isRead: true,
-            from: {
+            from: JSON.stringify({
                 emailAddress: {
                     name: 'Mohamed A Ali',
                     address: 'mali30@student.gsu.edu'
                 }
-            }
+            })
         }
     ]
 }
@@ -93,3 +93,5 @@ var my_json = {
 
 // how to access in the json
 console.log(my_json.value[0].id)
+
+console.log(my_json.value[0].from.name)

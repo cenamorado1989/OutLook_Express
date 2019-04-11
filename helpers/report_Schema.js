@@ -5,11 +5,28 @@ var sera = mongoose.Schema({
     subject: String,
     from: String,
     receivedDateTime: Date,
-    sentDateTime: Date
+    sentDateTime: Date,
+    // user: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'User'
+    // }
+
 });
+
+// var user = mongoose.Schema({
+//     userID: {
+//         type: mongoose.Schema.Types.ObjectId,
+//         userName: String,
+//         ref: 'SERA'
+//     }
+// })
+
+
 //2019-03-01T:00:12:00Z
 
-module.exports = mongoose.model("SERA", sera)
+
+module.exports = mongoose.model("SERA", sera);
+// module.exports = USER;
 //module.exports.reportSchema = reportSchema;
 // mongoose.model("Report", reportSchema)
 

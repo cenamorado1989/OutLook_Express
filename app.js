@@ -14,6 +14,7 @@ var authorize = require('./routes/authorize');
 var mail = require('./routes/mail');
 var database = require('./helpers/database');
 var reportSaver = require('./routes/reportSaver');
+var autoreport = require('./routes/autoreport')
 // var reports = require('./views/reports');
 
 // Creating report object from database.js
@@ -25,11 +26,13 @@ var app = express();
 // view engine setup
 // we also set the path to where to find the views folder
 app.set('views', path.join(__dirname, 'views'));
+
 // here we are setting the type of view engine we are using which is hbs
 app.set('view engine', 'hbs');
 
 // default logger to display erros
 app.use(logger('dev'));
+
 // Returns middleware that only parses json and only looks at requests where the 
 // Parses JSON between fron and back 
 app.use(bodyParser.json());
@@ -43,6 +46,7 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 
 // use any static files in the public direcotry
+// this is where our css files are stored
 app.use(express.static(path.join(__dirname, 'public')));
 
 // set the root route to show the index.js
@@ -56,9 +60,13 @@ app.use('/mail', mail);
 
 // app.use('/mail/saveReport', mail)
 
+// set the reportSaver route
 app.use('/reportSaver', reportSaver)
 
+// set the database route
 app.use('/database', database);
+
+app.use('/autoreport', autoreport)
 
 // app.use('/reports', reports)
 

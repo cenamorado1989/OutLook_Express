@@ -32,6 +32,26 @@
         <button id="bt2" type="submit" class="btn btn-danger clear-table">Clear</button>
     </form>
 
+    <tbody>
+        {{!-- here we are looping through the results array from the api --}}
+        {{#each mohamed}}
+        {{!-- If there are no read messages --}}
+        <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
+            <td title="{{this.from.emailAddress.address}}">{{this.from.emailAddress.name}}</td>
+            <td>{{this.subject}}</td>
+            <td>{{this.receivedDateTime}}</td>
+            <td>{{this.isRead}}</td>
+            <td>{{this.sentDateTime}}</td>
+
+
+
+
+
+
+        </tr>
+        {{/each}}
+    </tbody>
+
 
 
     {{!-- End of Report --}}
@@ -80,7 +100,7 @@
                 enddate: new Date($('.enddate').val())
             };
 
-            
+
             fetch(`/reportSaver?startdate=${dates.startdate}&enddate=${dates.enddate}`, {
                 // data: dates,
                 method: 'POST'
