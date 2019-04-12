@@ -39,7 +39,10 @@
     </form>
 
     <hr>
-
+    <div class="stats">
+        <span>Inbox: {{inboxTotal}}</span>
+        <span>Outbox: {{outboxTotal}}</span>
+    </div>
     {{!-- Table that you see on the page --}}
     <table class="table hidden">
         <thead class="thead-light">
@@ -49,18 +52,20 @@
             <th scope="col">Received</th>
             <th scope="col">isRead</th>
             <th scope="col">Sent Time</th>
+            <th scope="col">Location</th>
             {{!-- <th scope="col">Count</th> --}}
         </thead>
         <tbody id="tbod">
             {{!-- here we are looping through the reports array from the api --}}
-            {{#each mohamed}}
+            {{#each emails}}
             {{!-- If there are no read messages --}}
             <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
-                <td>{{this.from.emailAddress.name}}</td>
+                <td>{{this.name}} &lt;{{this.from}}&gt;</td>
                 <td>{{this.subject}}</td>
                 <td>{{this.receivedDateTime}}</td>
                 <td>{{this.isRead}}</td>
                 <td>{{this.sentDateTime}}</td>
+                <td>{{this.type}}</td>
             </tr>
             {{/each}}
         </tbody>

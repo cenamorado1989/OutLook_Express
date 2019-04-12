@@ -4,8 +4,11 @@ var sera = mongoose.Schema({
     isRead: Boolean,
     subject: String,
     from: String,
+    name: String,
     receivedDateTime: Date,
     sentDateTime: Date,
+    type: String
+    conversationId: String
     // user: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'User'
