@@ -30,7 +30,6 @@
             <input placeholder="Initial date" type="text" class="date startdate"> -
             <input placeholder="End date" type="text" class="date enddate">
         </div>
-
         <hr>
 
         {{!-- Button to save the Report --}}
@@ -40,27 +39,31 @@
 
     <hr>
     <div class="stats">
-        <span>Inbox: {{inboxTotal}}</span>
-        <span>Outbox: {{outboxTotal}}</span>
+        <span>This is my Inbox: <span id="inbox-count">{{inboxCount.filteredCount}}</span></span>
     </div>
+    <div>
+        <span> This is My Outbox: <span id="outbox-count">{{outboxCount.filteredCount}}</span></span>
+    </div>
+
     {{!-- Table that you see on the page --}}
     <table class="table hidden">
         <thead class="thead-light">
             {{!-- <th scope="col">From</th> --}}
+            <th scope="col">Email</th>
             <th scope="col">Name</th>
             <th scope="col">Subject</th>
             <th scope="col">Received</th>
             <th scope="col">isRead</th>
             <th scope="col">Sent Time</th>
-            <th scope="col">Location</th>
+            {{!-- <th scope="col">Location</th> --}}
             {{!-- <th scope="col">Count</th> --}}
         </thead>
         <tbody id="tbod">
-            {{!-- here we are looping through the reports array from the api --}}
+            {{!-- here we are looping through the emails array from the api --}}
             {{#each emails}}
             {{!-- If there are no read messages --}}
             <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
-                <td>{{this.name}} &lt;{{this.from}}&gt;</td>
+                {{!-- <td>{{this.name}} &lt;{{this.from}}&gt;</td> --}}
                 <td>{{this.subject}}</td>
                 <td>{{this.receivedDateTime}}</td>
                 <td>{{this.isRead}}</td>
@@ -139,17 +142,21 @@
 
             }).then(result => {
                 console.log(result);
-                data = result.filter(function (register) {
+                data = result.data.filter(function (register) {
                     var date = new Date(register.receivedDateTime);
                     return (
                         (!dates.startdate || date > dates.startdate) &&
                         (!dates.enddate || date < dates.enddate)
                     );
+                    // value that shows outbox total
+                    console.log("Number of outbox emails are", result.outboxCount.filteredCount)
                     // Convert to HTML
+
                 });
                 // Filter rows
-                console.log("== dates", data)
-
+                console.log("== front dates", data)
+                $("#inbox-count").html(result.inboxCount.mohamedInbox);
+                $("#outbox-count").html(result.outboxCount.mohamedOutbox);
                 var rows = data;
                 console.log(rows);
                 // This is updates the view based on results we get back
@@ -162,12 +169,15 @@
             }
 
         });
+
         // Clear click
         $('.clear-table').on('click', function () {
             // Clears table
             $('table tbody').html('<tr><td colspan="5"></td></tr>');
             // Clears inputs
             $('input').val('');
+            $("#inbox-count").html('');
+            $("#outbox-count").html('');
         });
     </script>
 </body>
