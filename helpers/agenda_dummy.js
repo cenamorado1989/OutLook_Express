@@ -1,5 +1,6 @@
 var Agenda = require('agenda');
-var connectionString = "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true"
+var connectionString = process.env.CONNECTION_STRING;
+
 var agenda = new Agenda({
     db: {
         address: connectionString,
