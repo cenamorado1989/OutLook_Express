@@ -222,6 +222,19 @@ router.post("/", async (req, res) => {
       report: true
     }
   };
+
+  // we wait for the access token whhich is stored in the request.cokies
+  const accessToken = await authHelper.getAccessToken(req.cookies, res);
+  // the username is stored in the request.cookies
+  const userName = req.cookies.graph_user_name;
+
+  // if we have both
+  if (accessToken && userName) {
+    // username is stored in parms.user. This is the name of the person logged in. Displayed on
+    // index.hbs
+    parms.user = userName;
+  }
+
   const {
     // the start day from the user
     startdate,
@@ -312,7 +325,10 @@ router.post("/", async (req, res) => {
        immediately send them the report containing the number of inbox,outbox,and average
        emails sent
       */
-    if (parseStartdate && parseEnddate < rightnow) {
+    if (
+      (parseStartdate && parseEnddate < rightnow) ||
+      parseEnddate == parseEnddate
+    ) {
       // Schedule Job
       // Agenda Job Scheduler
       var connectionString =
@@ -347,8 +363,8 @@ Returns the job.
         // https://github.com/sendgrid/sendgrid-nodejs
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
         const msg = {
-          to: "mohamedronaldohenry@gmail.com",
-          from: "mohamedronaldohenry@gmail.com",
+          to: `${parms.user}`,
+          from: `${parms.user}`,
           subject: "Report",
           text: "and easy to do anywhere, even with Node.js",
           html: `For the week of ${parseStartdate} to ${parseEnddate}, You have an Inbox count of : ${
@@ -416,8 +432,8 @@ Returns the job.
       // https://github.com/sendgrid/sendgrid-nodejs
       sgMail.setApiKey(process.env.SENDGRID_API_KEY);
       const msg = {
-        to: "mohamedronaldohenry@gmail.com",
-        from: "mohamedronaldohenry@gmail.com",
+        to: `${parms.user}`,
+        from: `${parms.user}`,
         subject: "Report",
         text: "and easy to do anywhere, even with Node.js",
         html: `For the week of ${parseStartdate} to ${parseEnddate}, You have an Inbox count of : ${
