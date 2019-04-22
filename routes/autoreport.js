@@ -293,38 +293,28 @@ router.post("/", async (req, res) => {
     parms.outboxTotal = filterCounts.length;
     parms.inboxTotal = filterInbox.length;
 
-    /*
-            if the user selects a start and endate which is less than the current date,
-            we will go ahead and send the report immediatly using SendGrid. Else we will
-            schedule a job based on the start date and end date they select. If they schedule 
-            a start and end date for the same day, we will send the report to them at the end of 
-            the day.
-         */
-    //  var today = new Date();
-    //  var dd = String(today.getDate()).padStart(2, '0');
-    //  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    //  var yyyy = today.getFullYear();
+    console.log("startdate =>", parseStartdate);
+    console.log("endate =>", parseEnddate);
 
-    //  today = mm + '/' + dd + '/' + yyyy;
-    if (parseStartdate && parseEnddate) {
-      console.log("startdate =>", parseStartdate);
-      console.log("endate =>", parseEnddate);
+    // gives us number of days
+    var totalDays = (parseEnddate - parseStartdate) / 1000 / 60 / 60 / 24;
+    console.log("This is number of days", totalDays);
 
-      // gives us number of days
-      var totalDays = (parseEnddate - parseStartdate) / 1000 / 60 / 60 / 24;
-      console.log("This is number of days", totalDays);
+    // gives us the date in the format 2019-03-01
+    let new_StartDate = parseStartdate.toISOString().slice(0, 10);
+    let new_EndtDate = parseEnddate.toISOString().slice(0, 10);
+
+    // gives us the current date
+    var rightnow = new Date().toLocaleDateString();
+    console.log("The current date and time is ", rightnow);
+
+    /* trying to check if user selects dates that are before today then we go ahead and 
+       immediately send them the report containing the number of inbox,outbox,and average
+       emails sent
+      */
+    if (parseStartdate && parseEnddate < rightnow) {
       // Schedule Job
-
       // Agenda Job Scheduler
-      var connectionString =
-        "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true";
-      var agenda = new Agenda({
-        db: {
-          address: connectionString,
-          collection: "agenda"
-        }
-      });
-
       var connectionString =
         "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true";
       var agenda = new Agenda({
@@ -338,27 +328,16 @@ router.post("/", async (req, res) => {
         await agenda.start();
 
         /*
-                define(jobName, [options], fn)
-
-                Defines a job with the name of jobName. When a job of jobName gets run, 
-                it will be passed to fn(job, done). To maintain asynchronous behavior, 
-                you must call done() when you are processing the job. If your function is 
-                synchronous, you may omit done from the signature.
-                 */
-        agenda.define("In five seconds", function(job, done) {
-          console.log("hello world!");
-          done();
-        });
-
-        /* 
-Schedules a job to run name once at a given time. when can be a Date or a String such as tomorrow at 5pm.
+Schedules a job to run name once at a given time.
+when can be a Date or a String such as tomorrow at 5pm.
 data is an optional argument that will be passed to the processing function under job.attrs.data.
 cb is an optional callback function which will be called when the job has been persisted in the database.
 Returns the job.
-                 */
-
-        agenda.schedule(`in ${totalDays} days`, "Second Test Run", {
+               */
+        agenda.schedule(`${rightnow}`, "First Test Run", {
           time: new Date(),
+          startDate: `${rightnow}`,
+          endDate: "",
           totalInboxCount: response.inboxCount.mohamedInbox,
           totalOutboxCount: response.outboxCount.mohamedOutbox,
           messageAverage: ""
@@ -375,8 +354,8 @@ Returns the job.
           html: `For the week of ${parseStartdate} to ${parseEnddate}, You have an Inbox count of : ${
             response.inboxCount.mohamedInbox
           }.
-          An Outbox Count of : ${response.outboxCount.mohamedOutbox}.
-          and an verage of: My Average`
+        An Outbox Count of : ${response.outboxCount.mohamedOutbox}.
+        and an verage of: My Average`
           // outbox: "response.outboxCount.mohamedOutbox"
         };
         sgMail.send(msg);
@@ -385,7 +364,75 @@ Returns the job.
       }
 
       run();
+    } // end of check for past dates
+
+    console.log("The new date is ", new_StartDate - new_EndtDate);
+
+    // Schedule Job
+    // Agenda Job Scheduler
+    var connectionString =
+      "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true";
+    var agenda = new Agenda({
+      db: {
+        address: connectionString,
+        collection: "agenda"
+      }
+    });
+
+    async function run() {
+      await agenda.start();
+
+      /*
+                define(jobName, [options], fn)
+
+                Defines a job with the name of jobName. When a job of jobName gets run, 
+                it will be passed to fn(job, done). To maintain asynchronous behavior, 
+                you must call done() when you are processing the job. If your function is 
+                synchronous, you may omit done from the signature.
+                 */
+      // agenda.define("In five seconds", function(job, done) {
+      //   console.log("hello world!");
+      //   done();
+      // });
+
+      /* 
+Schedules a job to run name once at a given time.
+ when can be a Date or a String such as tomorrow at 5pm.
+data is an optional argument that will be passed to the processing function under job.attrs.data.
+cb is an optional callback function which will be called when the job has been persisted in the database.
+Returns the job.
+                 */
+
+      agenda.schedule(`${rightnow}`, "First Test Run", {
+        time: new Date(),
+        startDate: `${rightnow}`,
+        endDate: "",
+        totalInboxCount: response.inboxCount.mohamedInbox,
+        totalOutboxCount: response.outboxCount.mohamedOutbox,
+        messageAverage: ""
+      });
+
+      // using SendGrid's v3 Node.js Library
+      // https://github.com/sendgrid/sendgrid-nodejs
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      const msg = {
+        to: "mohamedronaldohenry@gmail.com",
+        from: "mohamedronaldohenry@gmail.com",
+        subject: "Report",
+        text: "and easy to do anywhere, even with Node.js",
+        html: `For the week of ${parseStartdate} to ${parseEnddate}, You have an Inbox count of : ${
+          response.inboxCount.mohamedInbox
+        }.
+          An Outbox Count of : ${response.outboxCount.mohamedOutbox}.
+          and an verage of: My Average`
+        // outbox: "response.outboxCount.mohamedOutbox"
+      };
+      sgMail.send(msg);
+
+      console.log("Wait 5 seconds...");
     }
+
+    run();
 
     //  // Agenda Job Scheduler
     //  var connectionString = "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true"
