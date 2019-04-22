@@ -1,10 +1,9 @@
 var Agenda = require('agenda');
-var connectionString = process.env.CONNECTION_STRING;
-
+var connectionString = "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true"
 var agenda = new Agenda({
     db: {
         address: connectionString,
-        collection: 'outboxes'
+        collection: 'agenda'
     }
 });
 
@@ -12,17 +11,17 @@ var agenda = new Agenda({
 async function run() {
     await agenda.start();
 
-    agenda.define('hello world', function (job, done) {
+    agenda.define('In five seconds', function (job, done) {
         console.log('hello world!');
         done();
     });
 
-    agenda.schedule('in 10 seconds', 'greet the world', {
+    agenda.schedule('in 5 seconds', 'Mohamed was here', {
         time: new Date()
     });
-    agenda.start();
+    // agenda.start();
 
-    console.log('Wait 10 seconds...');
+    console.log('Wait 5 seconds...');
 
     const enc = encodeURIComponent('!')
     console.log('Encoded Value :', enc);

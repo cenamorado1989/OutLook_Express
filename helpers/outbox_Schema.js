@@ -1,6 +1,6 @@
 var mongoose = require('mongoose')
 
-var sera = mongoose.Schema({
+var my_outbox = mongoose.Schema({
     isRead: Boolean,
     subject: String,
     from: String,
@@ -14,4 +14,4 @@ var sera = mongoose.Schema({
 
 
 
-module.exports = mongoose.model("SERA", sera);
+module.exports = mongoose.model("OUTBOX", my_outbox);

@@ -15,6 +15,7 @@ var mail = require('./routes/mail');
 var database = require('./helpers/database');
 var reportSaver = require('./routes/reportSaver');
 var autoreport = require('./routes/autoreport')
+var my_outbox = require('./routes/outboxSaver')
 // var reports = require('./views/reports');
 
 // Creating report object from database.js
@@ -68,8 +69,7 @@ app.use('/database', database);
 
 app.use('/autoreport', autoreport)
 
-// app.use('/reports', reports)
-
+app.use('/outboxSaver', my_outbox);
 
 
 

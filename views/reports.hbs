@@ -45,6 +45,21 @@
         <span> This is My Outbox: <span id="outbox-count">{{outboxCount.filteredCount}}</span></span>
     </div>
 
+    {{!-- <div>
+        <span id="total-messages">
+            Total messages displayed:
+        </span>
+    </div> --}}
+
+    <div id="ratio">
+        <span>
+            Message Ratio :
+        </span>
+    </div>
+
+
+
+
     {{!-- Table that you see on the page --}}
     <table class="table hidden">
         <thead class="thead-light">
@@ -71,38 +86,40 @@
                 <td>{{this.type}}</td>
             </tr>
             {{/each}}
-        </tbody>
+
+            {{!-- Total count of messages on page --}}
+            {{!-- </tbody>
         <p id="total-count"></p>
-    </table>
+    </table> --}}
 
-    {{!-- End of Report --}}
+            {{!-- End of Report --}}
 
 
-    <!-- Bootstrap core JavaScript
+            <!-- Bootstrap core JavaScript
     ================================================== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!--
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+            <!--
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
-    <script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+            <script>
 
-        // Runs date picker plugin
-        $('input.date').datepicker();
-        // Gets data
-        var data;
+                // Runs date picker plugin
+                $('input.date').datepicker();
+                // Gets data
+                var data;
 
-        const updateView = (rows) => {
-            rows = rows.map(function (row) {
-                return `
+                const updateView = (rows) => {
+                    rows = rows.map(function (row) {
+                        return `
                     <tr>
                         <td> ${row.from}</td>
                         <td>${row.name || '-'}</td>
@@ -112,74 +129,78 @@
                         <td>${row.sentDateTime || '-'}</td>
                     </tr>
                 `;
-            });
-            // Show content
-            // This displays the number of emails
-            //  $('#total-count').html(rows.length)
+                    });
+                    // Show content
+                    // This displays the number of emails
+                    //  $('#total-count').html(rows.length)
 
-            $('table tbody').html(rows.join(''));
+                    $('table tbody').html(rows.join(''));
 
-            $('#total-count').html(rows.length)
-        }
-        // Form submit
-        $('form').on('submit', function (event) {
-            event.preventDefault();
+                    $('#total-count').html(rows.length)
+                }
+                // Form submit
+                $('form').on('submit', function (event) {
+                    event.preventDefault();
 
 
 
-            var dates = {
-                startdate: new Date($('.startdate').val()),
-                enddate: new Date($('.enddate').val())
-            };
-            fetch('/reportSaver', {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(dates),
-                method: 'POST'
-            }).then(function (response) {
-                return response.json();
+                    var dates = {
+                        startdate: new Date($('.startdate').val()),
+                        enddate: new Date($('.enddate').val())
+                    };
+                    fetch('/reportSaver', {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(dates),
+                        method: 'POST'
+                    }).then(function (response) {
+                        return response.json();
 
-            }).then(result => {
-                console.log(result);
-                data = result.data.filter(function (register) {
-                    var date = new Date(register.receivedDateTime);
-                    return (
-                        (!dates.startdate || date > dates.startdate) &&
-                        (!dates.enddate || date < dates.enddate)
-                    );
-                    // value that shows outbox total
-                    console.log("Number of outbox emails are", result.outboxCount.filteredCount)
-                    // Convert to HTML
+                    }).then(result => {
+                        console.log(result); 
+                        data = result.data.filter(function (register) {
+                            var date = new Date(register.receivedDateTime);
+                            return (
+                                (!dates.startdate || date > dates.startdate) &&
+                                (!dates.enddate || date < dates.enddate)
+                            );
+                            // value that shows outbox total
+                            console.log("Number of outbox emails are", result.outboxCount.filteredCount)
+                            // Convert to HTML
+
+                        });
+                        // Filter rows
+                        console.log("== front dates", data)
+                        $("#inbox-count").html(result.inboxCount.mohamedInbox);
+                        $("#outbox-count").html(result.outboxCount.mohamedOutbox);
+                        var result = parseFloat(result.inboxCount.mohamedInbox / result.outboxCount.mohamedOutbox).toFixed(2)
+                        $("#ratio").html(result)
+                        var rows = data;
+                        console.log(rows);
+                        // This is updates the view based on results we get back
+                        updateView(rows)
+                    })
+                    // Minimum validation for dates
+                    if ((dates.startdate && dates.startdate > dates.enddate) ||
+                        (dates.enddate && dates.enddate < dates.startdate)) {
+                        return alert('Use valid dates!');
+                    }
 
                 });
-                // Filter rows
-                console.log("== front dates", data)
-                $("#inbox-count").html(result.inboxCount.mohamedInbox);
-                $("#outbox-count").html(result.outboxCount.mohamedOutbox);
-                var rows = data;
-                console.log(rows);
-                // This is updates the view based on results we get back
-                updateView(rows)
-            })
-            // Minimum validation for dates
-            if ((dates.startdate && dates.startdate > dates.enddate) ||
-                (dates.enddate && dates.enddate < dates.startdate)) {
-                return alert('Use valid dates!');
-            }
 
-        });
+                // Clears table when user clicks clear button
+                $('.clear-table').on('click', function () {
+                    // Clears table
+                    $('table tbody').html('<tr><td colspan="5"></td></tr>');
+                    // Clears inputs
+                    $('input').val('');
+                    $("#inbox-count").html('');
+                    $("#outbox-count").html('');
+                    $("#total-messages").html('');
 
-        // Clear click
-        $('.clear-table').on('click', function () {
-            // Clears table
-            $('table tbody').html('<tr><td colspan="5"></td></tr>');
-            // Clears inputs
-            $('input').val('');
-            $("#inbox-count").html('');
-            $("#outbox-count").html('');
-        });
-    </script>
+                });
+            </script>
 </body>
 
 </html>

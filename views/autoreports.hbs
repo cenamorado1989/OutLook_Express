@@ -6,161 +6,209 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap core CSS -->
 
+    {{!-- <link rel="import" href="/bower_components/vaadin-date-picker/vaadin-date-picker.html"> --}}
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
 
+    <link rel='stylesheet' href='stylesheets/style.css' />
 
-    <link rel='stylesheet' href='/public/stylesheets/style.css' />
 
 </head>
 
 <body>
 
     {{!-- Start of Report --}}
-
+    <h2> Schedule a Report</h2>
+    <hr>
+    </hr>
 
     {{!-- Post form for Date Picker --}}
-    <form id="post_form" method="GET" action="">
+    <form id="post_form" method="post" action="/autoreport">
         <div class="date-picker">
-            <h3>Date</h3>
+            <h3>Select Date</h3>
             <input placeholder="Initial date" type="text" class="date startdate"> -
             <input placeholder="End date" type="text" class="date enddate">
         </div>
+        <hr>
 
         {{!-- Button to save the Report --}}
-        <button id="bt1" type="submit" class="btn btn-danger">Click to Get Reports</button>
-        <button id="bt2" type="submit" class="btn btn-danger clear-table">Clear</button>
+        <button id="bt1" type="submit" class="btn btn-danger">Click to Get Automatic Reports</button>
+        {{!-- <button id="bt2" type="submit" class="btn btn-danger clear-table">Clear</button> --}}
     </form>
 
-    <tbody>
-        {{!-- here we are looping through the results array from the api --}}
-        {{#each mohamed}}
-        {{!-- If there are no read messages --}}
-        <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
-            <td title="{{this.from.emailAddress.address}}">{{this.from.emailAddress.name}}</td>
-            <td>{{this.subject}}</td>
-            <td>{{this.receivedDateTime}}</td>
-            <td>{{this.isRead}}</td>
-            <td>{{this.sentDateTime}}</td>
+    <hr>
+    {{!-- <div class="stats">
+        <span>This is my Inbox: <span id="inbox-count">{{inboxCount.filteredCount}}</span></span>
+    </div>
+    <div>
+        <span> This is My Outbox: <span id="outbox-count">{{outboxCount.filteredCount}}</span></span>
+    </div> --}}
+
+    {{!-- <div>
+        <span id="total-messages">
+            Total messages displayed:
+        </span>
+    </div> --}}
+
+    {{!-- <div id="ratio">
+        <span>
+            Message Ratio :
+        </span>
+    </div> --}}
 
 
 
 
+    {{!-- Table that you see on the page --}}
+    <table class="table hidden">
+        <thead class="thead-light">
+            {{!-- <th scope="col">From</th> --}}
+            <th scope="col">Email</th>
+            <th scope="col">Name</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Received</th>
+            <th scope="col">isRead</th>
+            <th scope="col">Sent Time</th>
+            {{!-- <th scope="col">Location</th> --}}
+            {{!-- <th scope="col">Count</th> --}}
+        </thead>
+        <tbody id="tbod">
+            {{!-- here we are looping through the emails array from the api --}}
+            {{#each emails}}
+            {{!-- If there are no read messages --}}
+            <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
+                {{!-- <td>{{this.name}} &lt;{{this.from}}&gt;</td> --}}
+                <td>{{this.subject}}</td>
+                <td>{{this.receivedDateTime}}</td>
+                <td>{{this.isRead}}</td>
+                <td>{{this.sentDateTime}}</td>
+                <td>{{this.type}}</td>
+            </tr>
+            {{/each}}
+
+            {{!-- Total count of messages on page --}}
+            {{!-- </tbody>
+        <p id="total-count"></p>
+    </table> --}}
+
+            {{!-- End of Report --}}
 
 
-        </tr>
-        {{/each}}
-    </tbody>
-
-
-
-    {{!-- End of Report --}}
-
-
-    <!-- Bootstrap core JavaScript
+            <!-- Bootstrap core JavaScript
     ================================================== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <!--
-
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+            <!--
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+            <script>
 
+                // Runs date picker plugin
+                $('input.date').datepicker();
+                // Gets data
+                var data;
 
-    <script>
+                const updateView = (rows) => {
+                    rows = rows.map(function (row) {
+                        return `
+                    <tr>
+                        <td> ${row.from}</td>
+                        <td>${row.name || '-'}</td>
+                        <td>${row.subject || '-'}</td>
+                        <td>${row.receivedDateTime || '-'}</td>
+                        <td>${row.isRead || '-'}</td>
+                        <td>${row.sentDateTime || '-'}</td>
+                    </tr>
+                `;
+                    });
+                    // Show content
+                    // This displays the number of emails
+                    //  $('#total-count').html(rows.length)
 
-        // Runs date picker plugin
-        $('input.date').datepicker();
+                    $('table tbody').html(rows.join(''));
 
-        // Gets data
-        /*var data;
-        fetch('/reportSaver', {
-            // data: dates,
-            method: 'POST'
-        }).then(function (response) {
-            return response.json();
-        }).then(function (json) {
-            data = json;
-        });*/
-
-        // Form submit
-        $('form').on('submit', function (event) {
-            event.preventDefault();
-
-            var dates = {
-                startdate: new Date($('.startdate').val()),
-                enddate: new Date($('.enddate').val())
-            };
-
-
-            fetch(`/reportSaver?startdate=${dates.startdate}&enddate=${dates.enddate}`, {
-                // data: dates,
-                method: 'POST'
-            }).then(function (response) {
-                return response.json();
-            }).then(function (json) {
-                const data = json;
-
-                // Minimum validation for dates
-                if ((dates.startdate && dates.startdate > dates.enddate) ||
-                    (dates.enddate && dates.enddate < dates.startdate)) {
-                    return alert('Use valid dates!');
+                    $('#total-count').html(rows.length)
                 }
+                // Form submit
+                $('form').on('submit', function (event) {
+                    event.preventDefault();
 
-                // Filter rows
-                var rows = data.filter(function (register) {
-                    var date = new Date(register.receivedDateTime);
 
-                    return (
-                        (!dates.startdate || date > dates.startdate) &&
-                        (!dates.enddate || date < dates.enddate)
-                    );
-                    // Convert to HTML
-                }).map(function (row) {
-                    /*                        {{!-- <td>&nbsp;</td> --}}
-                                            {{!-- getting undefined for the from --}}*/
-                    return `
-                        <tr>
-                            <td>${row.from}</td>
-                            <td>${row.name || '-'}</td>
-                            <td>${row.subject || '-'}</td>
-                            <td>${row.receivedDateTime || '-'}</td>
-                            <td>${row.isRead || '-'}</td>
-                            <td>${row.sentDateTime || '-'}</td>
-                        </tr>
-                    `;
+                    // this is the value of start and enddate picked by the user
+                    var dates = {
+                        startdate: new Date($('.startdate').val()),
+                        enddate: new Date($('.enddate').val())
+                    };
+                    fetch('/autoreport', {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        // body is set to the stringify version of dates
+                        body: JSON.stringify(dates),
+                        // POST method
+                        method: 'POST'
+                        // here we return the json version of the response
+                    }).then(function (response) {
+                        return response.json();
+
+                    }).then(result => {
+                        console.log(result);
+                        data = result.data.filter(function (register) {
+                            var date = new Date(register.receivedDateTime);
+                            // here we filter the dates.
+
+                            return (
+                                (!dates.startdate || date > dates.startdate) &&
+                                (!dates.enddate || date < dates.enddate)
+                            );
+                            // value that shows outbox total
+                            console.log("Number of outbox emails are", result.outboxCount.filteredCount)
+                            // Convert to HTML
+
+                        });
+                        // Filter rows
+                        console.log("== front dates", data)
+                        // set value for the counts for inbox and outbox
+                        $("#inbox-count").html(result.inboxCount.mohamedInbox);
+                        $("#outbox-count").html(result.outboxCount.mohamedOutbox);
+                        // returns the float version of the average
+                        var result = parseFloat(result.inboxCount.mohamedInbox / result.outboxCount.mohamedOutbox).toFixed(2)
+                        $("#ratio").html(result)
+
+                        var rows = data;
+                        console.log(rows);
+                        // This is updates the view based on results we get back
+                        updateView(rows)
+                    })
+                    // Minimum validation for dates
+                    if ((dates.startdate && dates.startdate > dates.enddate) ||
+                        (dates.enddate && dates.enddate < dates.startdate)) {
+                        return alert('Use valid dates!');
+                    }
+
                 });
 
-                let $table = $('table tbody');
+                // Clears table when user clicks clear button
+                $('.clear-table').on('click', function () {
+                    // Clears table
+                    $('table tbody').html('<tr><td colspan="5"></td></tr>');
+                    // Clears inputs
+                    $('input').val('');
+                    $("#inbox-count").html('');
+                    $("#outbox-count").html('');
+                    $("#total-messages").html('');
 
-                if (!$table.length) {
-                    $table = $('<table><tbody></tbody></table>').appendTo('body')
-                }
-
-                // Show content
-                $table.html(rows.join(''));
-            });
-        });
-
-        // Clear click
-        $('.clear-table').on('click', function () {
-            // Clears table
-            $('table tbody').html('<tr><td colspan="5">Make a search</td></tr>');
-
-            // Clears inputs
-            $('input').val('');
-        });
-    </script>
-
+                });
+            </script>
 </body>
 
 </html>

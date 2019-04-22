@@ -49,13 +49,18 @@
 
         {{!-- {{#if user}} --}}
         <li class="nav-item{{#if active.myReport}} active{{/if}}">
-          <a class=" nav-link" href="/reportSaver">My Reports</a>
+          <a class=" nav-link" href="/reportSaver">One Time Reports</a>
         </li>
         {{!-- {{/if}} --}}
 
         <li class="nav-item{{#if active.schedule}} active{{/if}}">
-          <a class="nav-link" href="/autoreport"> Report Scheduler</a>
+          <a class="nav-link" href="/autoreport"> Automated Scheduler</a>
         </li>
+
+        {{!-- <li>
+          <a class="nav-link" href='/outboxSaver'>Outbox</a>
+
+        </li> --}}
 
         {{!-- end of <ul> --}}
       </ul>

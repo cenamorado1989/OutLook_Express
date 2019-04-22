@@ -1,0 +1,2 @@
+// this will get all conversationID that matches the one specified
+db.outboxes.aggregate([{$match:{conversationId:'AAQkADg4MTBkNmRiLTAwNzQtNDE1Ny1hNjlkLWVjNzE5N2M1MGEwMgAQALk3g9sEAMBCrNuqLyn4BQ4='}}])
