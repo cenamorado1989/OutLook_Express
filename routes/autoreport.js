@@ -3,6 +3,8 @@ var router = express.Router();
 var authHelper = require("../helpers/auth");
 var Agenda = require("agenda");
 const sgMail = require("@sendgrid/mail");
+var graph = require('@microsoft/microsoft-graph-client');
+
 
 /*
   Get method when the page is hit. For now it just renders the page and nothing else
@@ -31,6 +33,9 @@ router.get("/", async function (req, res) {
 });
 
 ("==================================================================================================");
+
+
+
 
 function getOutbox(client) {
     return (
@@ -223,6 +228,18 @@ router.post("/", async (req, res) => {
         }
     };
 
+
+
+
+
+
+
+
+
+
+
+
+
     // we wait for the access token whhich is stored in the request.cokies
     const accessToken = await authHelper.getAccessToken(req.cookies, res);
     // the username is stored in the request.cookies
@@ -230,10 +247,26 @@ router.post("/", async (req, res) => {
 
     // if we have both
     if (accessToken && userName) {
+
+        // Initialize Graph client
+        const client = graph.Client.init({
+            authProvider: (done) => {
+                done(null, accessToken);
+            }
+        });
+
+
         // username is stored in parms.user. This is the name of the person logged in. Displayed on
         // index.hbs
         parms.user = userName;
+
+        parms.usersEmail = await client
+            .api('/me/mail')
+            .get();
+
+
     }
+
 
     const {
         // the start day from the user
@@ -247,10 +280,10 @@ router.post("/", async (req, res) => {
         return res.send("Please select start and end dates");
     }
     /*
-             Here we query the db and get based on the selected dates
-             Uncomment to go back to old way
-        
-           */
+               Here we query the db and get based on the selected dates
+               Uncomment to go back to old way
+          
+             */
     try {
         const findDates = await SERA.find()
             .lean()
@@ -298,16 +331,22 @@ router.post("/", async (req, res) => {
             }
         };
 
-        const checkIfOutbox = response.outboxCount.conversations.map(convo => {
-            return filterDateSelections.filter(filteredDate => {
-                return filteredDate.conversationId === convo.conversationId
-            })[0];
-        }).filter(f => !!f);
+        const checkIfOutbox = response.outboxCount.conversations
+            .map(convo => {
+                return filterDateSelections.filter(filteredDate => {
+                    return filteredDate.conversationId === convo.conversationId;
+                })[0];
+            })
+            .filter(f => !!f);
 
         console.log(
             "Filtered Inbox Count =========>",
             response.inboxCount.mohamedInbox
         );
+
+        console.log("The current logged in users email is <---> ", parms.usersEmail.value)
+
+
 
         parms.outboxTotal = filterCounts.length;
         parms.inboxTotal = filterInbox.length;
@@ -328,68 +367,82 @@ router.post("/", async (req, res) => {
         console.log("The current date and time is ", rightnow);
 
         /* trying to check if user selects dates that are before today then we go ahead and 
-           immediately send them the report containing the number of inbox,outbox,and average
-           emails sent
-          */
-        if ((parseStartdate && parseEnddate < rightnow) ||
+               immediately send them the report containing the number of inbox,outbox,and average
+               emails sent
+              */
+        if (
+            (parseStartdate && parseEnddate < rightnow) ||
             parseEnddate == parseEnddate
         ) {
-            // Schedule Job
-            // Agenda Job Scheduler
-            var connectionString =
-                "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true";
-            var agenda = new Agenda({
-                db: {
-                    address: connectionString,
-                    collection: "agenda"
-                }
-            });
+            //             // Schedule Job
+            //             // Agenda Job Scheduler
+            //             var connectionString =
+            //                 "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true";
+            //             var agenda = new Agenda({
+            //                 db: {
+            //                     address: connectionString,
+            //                     collection: "agenda"
+            //                 }
+            //             });
 
-            async function run() {
-                await agenda.start();
+            //             async function run() {
+            //                 await agenda.start();
 
-                /*
-Schedules a job to run name once at a given time.
-when can be a Date or a String such as tomorrow at 5pm.
-data is an optional argument that will be passed to the processing function under job.attrs.data.
-cb is an optional callback function which will be called when the job has been persisted in the database.
-Returns the job.
-               */
-                agenda.schedule(`${rightnow}`, "First Test Run", {
-                    time: new Date(),
-                    startDate: `${rightnow}`,
-                    endDate: "",
-                    totalInboxCount: filterDateSelections.length,
-                    totalOutboxCount: checkIfOutbox.length,
-                    messageAverage: ""
-                });
+            //                 /*
+            // Schedules a job to run name once at a given time.
+            // when can be a Date or a String such as tomorrow at 5pm.
+            // data is an optional argument that will be passed to the processing function under job.attrs.data.
+            // cb is an optional callback function which will be called when the job has been persisted in the database.
+            // Returns the job.
+            //                */
+            //                 agenda.schedule(`${rightnow}`, "First Test Run", {
+            //                     time: new Date(),
+            //                     startDate: `${rightnow}`,
+            //                     endDate: "",
+            //                     totalInboxCount: filterDateSelections.length,
+            //                     totalOutboxCount: checkIfOutbox.length,
+            //                     messageAverage: (
+            //                         checkIfOutbox.length / filterDateSelections.length
+            //                     ).toFixed(2)
+            //                 });
 
-                //if a user selects a date (select todays date) 2019-04-23:11:00
-                //on the backend add extra time ( to todays date) 2019-04-23:11:05
-                /// Add a minute or 30 seconds and see if it sends the report
+            //if a user selects a date (select todays date) 2019-04-23:11:00
+            //on the backend add extra time ( to todays date) 2019-04-23:11:05
+            /// Add a minute or 30 seconds and see if it sends the report
 
-                // using SendGrid's v3 Node.js Library
-                // https://github.com/sendgrid/sendgrid-nodejs
-                sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-                const msg = {
-                    to: `mali30@student.gsu.edu`,
-                    from: `mohamedronaldohenry@gmail.com`,
-                    subject: "Report",
-                    text: "and easy to do anywhere, even with Node.js",
-                    html: `For the week of ${parseStartdate} to ${parseEnddate}, You have an Inbox count of : ${
-            filterDateSelections.length
-          }.
-        An Outbox Count of : ${filterDateSelections.length}.
-        and an Average of: ${(checkIfOutbox.length / filterDateSelections.length).toFixed(2)} for the week`
-                    // outbox: "response.outboxCount.mohamedOutbox"
-                };
-                sgMail.send(msg);
+            // using SendGrid's v3 Node.js Library
+            // https://github.com/sendgrid/sendgrid-nodejs
+            sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+            const msg = {
+                to: `${parms.usersEmail.value}`,
+                from: `${parms.usersEmail.value}`,
+                subject: "Report",
+                text: "and easy to do anywhere, even with Node.js",
+                html: `<div><h3>For the week of ${parseStartdate} to ${parseEnddate}</h3></div>
+         <div><h3> You have an Inbox count of : ${
+           filterDateSelections.length
+         }.</h3> </div>
+       <div><h3> An Outbox Count of : ${
+         filterDateSelections.length
+       }.</h3> </div>
+       <div> <h3> An Average of: ${(
+         checkIfOutbox.length / filterDateSelections.length
+       ).toFixed(2)} for the week </h3> </div>`
+                // outbox: "response.outboxCount.mohamedOutbox"
+            };
+            sgMail.send(msg);
 
-                console.log("Wait 5 seconds...");
-            }
+            console.log("Wait 5 seconds...");
+        }
 
-            run();
-        } else { // end of check for past dates
+        //run();
+        // here we check if the dates are greater
+        else if (parseStartdate && parseEnddate > rightnow || parseStartdate > rightnow) {
+
+
+
+        } else {
+            // end of check for past dates
 
             console.log("The new date is ", new_StartDate - new_EndtDate);
 
@@ -408,13 +461,13 @@ Returns the job.
                 await agenda.start();
 
                 /*
-                          define(jobName, [options], fn)
+                                  define(jobName, [options], fn)
 
-                          Defines a job with the name of jobName. When a job of jobName gets run, 
-                          it will be passed to fn(job, done). To maintain asynchronous behavior, 
-                          you must call done() when you are processing the job. If your function is 
-                          synchronous, you may omit done from the signature.
-                           */
+                                  Defines a job with the name of jobName. When a job of jobName gets run, 
+                                  it will be passed to fn(job, done). To maintain asynchronous behavior, 
+                                  you must call done() when you are processing the job. If your function is 
+                                  synchronous, you may omit done from the signature.
+                                   */
                 // agenda.define("In five seconds", function(job, done) {
                 //   console.log("hello world!");
                 //   done();
@@ -432,24 +485,28 @@ Returns the job.
                     time: new Date(),
                     startDate: `${rightnow}`,
                     endDate: "",
-                    totalInboxCount: response.inboxCount.mohamedInbox,
-                    totalOutboxCount: response.outboxCount.mohamedOutbox,
-                    messageAverage: ""
+                    totalInboxCount: filterDateSelections.length,
+                    totalOutboxCount: checkIfOutbox.length,
+                    messageAverage: (
+                        checkIfOutbox.length / filterDateSelections.length
+                    ).toFixed(2)
                 });
 
                 // using SendGrid's v3 Node.js Library
                 // https://github.com/sendgrid/sendgrid-nodejs
                 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
                 const msg = {
-                    to: `mali30@student.gsu.edu`,
-                    from: `mohamedronaldohenry@gmail.com`,
+                    to: `${parms.usersEmail.value}`,
+                    from: `${parms.usersEmail.value}`,
                     subject: "Report",
                     text: "and easy to do anywhere, even with Node.js",
                     html: `For the week of ${parseStartdate} to ${parseEnddate}, You have an Inbox count of : ${
-          response.inboxCount.mohamedInbox
-        }.
-          An Outbox Count of : ${response.outboxCount.mohamedOutbox}.
-          and an verage of: My Average`
+            filterDateSelections.length
+          }.
+          An Outbox Count of : ${checkIfOutbox.length}.
+          and an verage of: ${(
+            checkIfOutbox.length / filterDateSelections.length
+          ).toFixed(2)}`
                     // outbox: "response.outboxCount.mohamedOutbox"
                 };
                 sgMail.send(msg);
@@ -459,44 +516,8 @@ Returns the job.
 
             run();
         }
-        //  // Agenda Job Scheduler
-        //  var connectionString = "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true"
-        //  var agenda = new Agenda({
-        //      db: {
-        //          address: connectionString,
-        //          collection: 'agenda'
-        //      }
-        //  });
 
-        //  async function run() {
-        //      // start the job
-        //      await agenda.start();
 
-        //      // define the job
-        //      agenda.define('In five seconds', function (job, done) {
-        //          console.log('hello world!');
-        //          // must have done since this is async
-        //          done();
-        //      });
-        //      /* will complete job in time specified and will set the name as
-        //       whats passed 'Mohamed was here'
-        //       */
-        //      agenda.schedule('in 5 seconds', 'This is from the post', {
-        //          // will have a date field with the time stored in the collection
-        //          time: new Date(),
-        //          quantity: req.query.quantity,
-        //          email: {
-        //              inboxCount: inboxCount.mohamedInbox,
-        //              outboxCount: outobxCount.mohamedOutbox
-        //          }
-        //      });
-        //      // agenda.start();
-
-        //      console.log('Wait 5 seconds...');
-
-        //  }
-
-        //  run();
 
         console.log("This is the number of inbox emails", filterInbox.length);
         console.log("This is the number of outbox emails", filterCounts.length);
@@ -516,129 +537,5 @@ Returns the job.
     });
 });
 
-("===================================================================================================");
-/* TestingPost Route for Scheduling Jobs*/
-//  router.post("/quantity", async (req, res) => {
-//      let parms = {
-//          title: "Auto Report",
-//          active: {
-//              auto: true
-//          }
-//      };
-
-//      res.send('The quantity is : ' + req.query.quantity);
-//      console.log("The quantity is ", req.query.quantity);
-
-//      var connectionString = "mongodb+srv://mohamedali:Moemo124!@sera-outlook-edxbb.mongodb.net/test?retryWrites=true"
-//      var agenda = new Agenda({
-//          db: {
-//              address: connectionString,
-//              collection: 'agenda'
-//          }
-//      });
-
-//      async function run() {
-//          // start the job
-//          await agenda.start();
-
-//          // define the job
-//          agenda.define('In five seconds', function (job, done) {
-//              console.log('hello world!');
-//              // must have done since this is async
-//              done();
-//          });
-//          /* will complete job in time specified and will set the name as
-//           whats passed 'Mohamed was here'
-//           */
-//          agenda.schedule('in 5 seconds', 'This is from the post', {
-//              // will have a date field with the time stored in the collection
-//              time: new Date(),
-//              quantity: req.query.quantity
-//          });
-//          // agenda.start();
-
-//          console.log('Wait 5 seconds...');
-
-//      }
-
-//      run();
-
-//      //  const {
-//      //      startdate,
-//      //      enddate
-//      //  } = req.body;
-//      //  console.log("========", req.body);
-//      //  if (!startdate && !enddate) {
-//      //      res.status(400);
-//      //      return res.send("Please select start and end dates");
-//      //  }
-//      //  /*
-//      //        Here we query the db and get based on the selected dates
-//      //        Uncomment to go back to old way
-
-//      //      */
-//      //  try {
-//      //      const findDates = await SERA.find()
-//      //          .lean()
-//      //          .exec();
-//      //      const parseStartdate = new Date(startdate);
-//      //      const parseEnddate = new Date(enddate);
-
-//      //      // Filters by date range
-//      //      const filterDateSelections = findDates.filter(result => {
-//      //          const date = new Date(result.receivedDateTime).getTime();
-//      //          return date >= parseStartdate.getTime() && date <= parseEnddate.getTime();
-//      //      });
-//      //      // gets count of outbox messages
-//      //      const getConvoCounts = await getTotalResponses();
-//      //      // get count of inbox messages
-//      //      const getInboxCounts = await getInboxResponses();
-//      //      // call inbox logic for counting here
-//      //      console.log(getConvoCounts);
-
-//      //      const filterCounts = filterDateSelections.map(ft => {
-//      //          return getConvoCounts.conversations.filter(
-//      //              gC => gC.conversationId === ft.conversationId
-//      //          );
-//      //      });
-
-//      //      const filterInbox = filterDateSelections.map(ft => {
-//      //          return getInboxCounts.conversations.filter(
-//      //              gc => gc.conversationId === ft.conversationId
-//      //          );
-//      //      });
-
-//      //      const response = {
-//      //          data: filterDateSelections,
-//      //          outboxCount: {
-//      //              filteredCount: filterCounts.length,
-//      //              ...getConvoCounts
-//      //          },
-//      //          data2: filterDateSelections,
-//      //          inboxCount: {
-//      //              filteredCount: filterInbox.length,
-//      //              ...getInboxCounts
-//      //          }
-//      //      };
-
-//      //      parms.outboxTotal = filterCounts.length;
-//      //      parms.inboxTotal = filterInbox.length;
-//      //      console.log("This is the number of inbox emails", filterInbox.length);
-//      //      console.log("This is the number of outbox emails", filterCounts.length);
-//      //      return res.send(response);
-//      //  } catch (e) {
-//      //      console.log(e, "an eror");
-//      //  }
-
-//      //  SERA.find({}, function (error, reply) {
-//      //      if (!error) {
-//          // Sends result
-//          res.send(reply);
-//          console.log("I am sending the filtered emails");
-//      } else {
-//          console.log("There is a problem filtering emails");
-//      }
-//  });
-//});
 
 module.exports = router;

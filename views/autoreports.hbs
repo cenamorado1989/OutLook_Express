@@ -106,7 +106,7 @@
         }
         if ('{{saveSuccess}}' === 'true') {
             console.log("============value>", '{{saveSuccess}}')
-            toastr["success"]("Saved", "Report")
+            toastr["success"]("Saved", "Generated Report")
         }
 
 
@@ -159,7 +159,7 @@
                 return response.json();
 
             }).then(result => {
-                toastr["success"]("Saved", "Report")
+                toastr["success"]("Report", "Generated Automatic")
 
 
                 console.log(result);

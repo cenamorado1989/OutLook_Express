@@ -37,13 +37,16 @@
         <button id="bt2" type="submit" class="btn btn-danger clear-table">Clear</button>
     </form>
 
-    <hr>
-    <div class="stats">
-        <span>This is my Inbox: <span id="inbox-count">{{inboxCount.filteredCount}}</span></span>
-    </div>
+
+
     <div>
         <span> This is My Outbox: <span id="outbox-count">{{outboxCount.filteredCount}}</span></span>
     </div>
+
+    <div class="stats">
+        <span>This is my Inbox: <span id="inbox-count">{{inboxCount.filteredCount}}</span></span>
+    </div>
+
 
     {{!-- <div>
         <span id="total-messages">
@@ -51,9 +54,9 @@
         </span>
     </div> --}}
 
-    <div id="ratio">
+    <div>
         <span>
-            Message Ratio :
+            Message Average : <span id="ratio">{{my_rad}}</span>
         </span>
     </div>
 
@@ -183,7 +186,8 @@
                         $("#inbox-count").html(data.length);
                         $("#outbox-count").html(checkIfOutbox.length);
                         var result = parseFloat(checkIfOutbox.length / data.length).toFixed(2)
-                        $("#ratio").html(result)
+                        var my_rad = parseInt(result, 10)
+                        $("#ratio").html(result + "%")
                         var rows = data;
                         console.log(rows);
                         // This is updates the view based on results we get back
@@ -206,6 +210,7 @@
                     $("#inbox-count").html('');
                     $("#outbox-count").html('');
                     $("#total-messages").html('');
+                    $("#ratio").html('')
 
                 });
             </script>
