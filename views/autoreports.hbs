@@ -10,6 +10,7 @@
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css" />
 
     <link rel='stylesheet' href='stylesheets/style.css' />
 
@@ -60,66 +61,63 @@
 
 
 
-    {{!-- Table that you see on the page --}}
-    <table class="table hidden">
-        <thead class="thead-light">
-            {{!-- <th scope="col">From</th> --}}
-            <th scope="col">Email</th>
-            <th scope="col">Name</th>
-            <th scope="col">Subject</th>
-            <th scope="col">Received</th>
-            <th scope="col">isRead</th>
-            <th scope="col">Sent Time</th>
-            {{!-- <th scope="col">Location</th> --}}
-            {{!-- <th scope="col">Count</th> --}}
-        </thead>
-        <tbody id="tbod">
-            {{!-- here we are looping through the emails array from the api --}}
-            {{#each emails}}
-            {{!-- If there are no read messages --}}
-            <tr class="{{#unless this.isRead}}table-primary{{/unless}}">
-                {{!-- <td>{{this.name}} &lt;{{this.from}}&gt;</td> --}}
-                <td>{{this.subject}}</td>
-                <td>{{this.receivedDateTime}}</td>
-                <td>{{this.isRead}}</td>
-                <td>{{this.sentDateTime}}</td>
-                <td>{{this.type}}</td>
-            </tr>
-            {{/each}}
 
-            {{!-- Total count of messages on page --}}
-            {{!-- </tbody>
+    {{!-- Total count of messages on page --}}
+    {{!-- </tbody>
         <p id="total-count"></p>
     </table> --}}
 
-            {{!-- End of Report --}}
+    {{!-- End of Report --}}
 
 
-            <!-- Bootstrap core JavaScript
+    <!-- Bootstrap core JavaScript
     ================================================== -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-            <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!--
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"
         integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>-->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-                crossorigin="anonymous"></script>
-            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-                crossorigin="anonymous"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-            <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
-            <script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
 
-                // Runs date picker plugin
-                $('input.date').datepicker();
-                // Gets data
-                var data;
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+        if ('{{saveSuccess}}' === 'true') {
+            console.log("============value>", '{{saveSuccess}}')
+            toastr["success"]("Saved", "Report")
+        }
 
-                const updateView = (rows) => {
-                    rows = rows.map(function (row) {
-                        return `
+
+        // Runs date picker plugin
+        $('input.date').datepicker();
+        // Gets data
+        var data;
+
+        const updateView = (rows) => {
+            rows = rows.map(function (row) {
+                return `
                     <tr>
                         <td> ${row.from}</td>
                         <td>${row.name || '-'}</td>
@@ -129,86 +127,95 @@
                         <td>${row.sentDateTime || '-'}</td>
                     </tr>
                 `;
-                    });
-                    // Show content
-                    // This displays the number of emails
-                    //  $('#total-count').html(rows.length)
+            });
+            // Show content
+            // This displays the number of emails
+            //  $('#total-count').html(rows.length)
 
-                    $('table tbody').html(rows.join(''));
+            $('table tbody').html(rows.join(''));
 
-                    $('#total-count').html(rows.length)
-                }
-                // Form submit
-                $('form').on('submit', function (event) {
-                    event.preventDefault();
+            $('#total-count').html(rows.length)
+        }
+        // Form submit
+        $('form').on('submit', function (event) {
+            event.preventDefault();
 
 
-                    // this is the value of start and enddate picked by the user
-                    var dates = {
-                        startdate: new Date($('.startdate').val()),
-                        enddate: new Date($('.enddate').val())
-                    };
-                    fetch('/autoreport', {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        // body is set to the stringify version of dates
-                        body: JSON.stringify(dates),
-                        // POST method
-                        method: 'POST'
-                        // here we return the json version of the response
-                    }).then(function (response) {
-                        return response.json();
+            // this is the value of start and enddate picked by the user
+            var dates = {
+                startdate: new Date($('.startdate').val()),
+                enddate: new Date($('.enddate').val())
+            };
+            fetch('/autoreport', {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                // body is set to the stringify version of dates
+                body: JSON.stringify(dates),
+                // POST method
+                method: 'POST'
+                // here we return the json version of the response
+            }).then(function (response) {
+                return response.json();
 
-                    }).then(result => {
-                        console.log(result);
-                        data = result.data.filter(function (register) {
-                            var date = new Date(register.receivedDateTime);
-                            // here we filter the dates.
+            }).then(result => {
+                toastr["success"]("Saved", "Report")
 
-                            return (
-                                (!dates.startdate || date > dates.startdate) &&
-                                (!dates.enddate || date < dates.enddate)
-                            );
-                            // value that shows outbox total
-                            console.log("Number of outbox emails are", result.outboxCount.filteredCount)
-                            // Convert to HTML
 
-                        });
-                        // Filter rows
-                        console.log("== front dates", data)
-                        // set value for the counts for inbox and outbox
-                        $("#inbox-count").html(result.inboxCount.mohamedInbox);
-                        $("#outbox-count").html(result.outboxCount.mohamedOutbox);
-                        // returns the float version of the average
-                        var result = parseFloat(result.inboxCount.mohamedInbox / result.outboxCount.mohamedOutbox).toFixed(2)
-                        $("#ratio").html(result)
+                console.log(result);
+                data = result.data.filter(function (register) {
+                    var date = new Date(register.receivedDateTime);
+                    // here we filter the dates.
 
-                        var rows = data;
-                        console.log(rows);
-                        // This is updates the view based on results we get back
-                        updateView(rows)
-                    })
-                    // Minimum validation for dates
-                    if ((dates.startdate && dates.startdate > dates.enddate) ||
-                        (dates.enddate && dates.enddate < dates.startdate)) {
-                        return alert('Use valid dates!');
-                    }
+                    return (
+                        (!dates.startdate || date > dates.startdate) &&
+                        (!dates.enddate || date < dates.enddate)
+                    );
+                    // value that shows outbox total
+                    console.log("Number of outbox emails are", result.outboxCount.filteredCount)
+                    // Convert to HTML
 
                 });
+                // Filter rows
+                console.log("== front dates", data)
+                // set value for the counts for inbox and outbox
+                $("#inbox-count").html(result.inboxCount.mohamedInbox);
+                $("#outbox-count").html(result.outboxCount.mohamedOutbox);
+                // returns the float version of the average
+                var result = parseFloat(result.inboxCount.mohamedInbox / result.outboxCount.mohamedOutbox).toFixed(2)
+                $("#ratio").html(result)
 
-                // Clears table when user clicks clear button
-                $('.clear-table').on('click', function () {
-                    // Clears table
-                    $('table tbody').html('<tr><td colspan="5"></td></tr>');
-                    // Clears inputs
-                    $('input').val('');
-                    $("#inbox-count").html('');
-                    $("#outbox-count").html('');
-                    $("#total-messages").html('');
+                var rows = data;
+                console.log(rows);
+                // This is updates the view based on results we get back
+                updateView(rows)
+            })
+            // Minimum validation for dates
+            if ((dates.startdate && dates.startdate > dates.enddate) ||
+                (dates.enddate && dates.enddate < dates.startdate)) {
+                return alert('Use valid dates!');
+            }
 
-                });
-            </script>
+        });
+
+        // Clears table when user clicks clear button
+        $('.clear-table').on('click', function () {
+            // Clears table
+            $('table tbody').html('<tr><td colspan="5"></td></tr>');
+            // Clears inputs
+            $('input').val('');
+            $("#inbox-count").html('');
+            $("#outbox-count").html('');
+            $("#total-messages").html('');
+
+        });
+
+
+
+
+
+
+    </script>
 </body>
 
 </html>

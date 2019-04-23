@@ -190,6 +190,7 @@ const getInboxResponses = async () => {
   const result = {
     // this holds the actual count of emails for the time period
     mohamedInbox: totalInboxes,
+    testing: 'hello',
     conversations: conversations
   };
   console.log("==========This is the global for inboxes", result);
